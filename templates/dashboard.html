@@ -1,0 +1,408 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Customer Dashboard - SmartFix</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #f4f7fb;
+            color: #222;
+        }
+
+        /* =========================
+           NAVBAR
+        ========================== */
+
+        nav {
+            background: #1e3a8a;
+
+            color: white;
+
+            padding: 18px 50px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logout {
+            background: #dc2626;
+
+            color: white;
+
+            text-decoration: none;
+
+            padding: 9px 16px;
+
+            border-radius: 5px;
+
+            font-weight: bold;
+        }
+
+        .logout:hover {
+            background: #b91c1c;
+        }
+
+
+        /* =========================
+           MAIN
+        ========================== */
+
+        .container {
+            width: 90%;
+
+            max-width: 1100px;
+
+            margin: 40px auto;
+        }
+
+
+        .welcome {
+            background: white;
+
+            padding: 30px;
+
+            border-radius: 10px;
+
+            box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+
+            margin-bottom: 30px;
+        }
+
+        .welcome h1 {
+            margin-top: 0;
+
+            color: #1e3a8a;
+        }
+
+        .welcome p {
+            color: #666;
+
+            line-height: 1.6;
+        }
+
+
+        /* =========================
+           ACTION CARDS
+        ========================== */
+
+        .cards {
+            display: grid;
+
+            grid-template-columns: repeat(2, 1fr);
+
+            gap: 25px;
+
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+
+            padding: 35px;
+
+            border-radius: 10px;
+
+            text-align: center;
+
+            box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+        }
+
+        .icon {
+            font-size: 45px;
+
+            margin-bottom: 15px;
+        }
+
+        .card h2 {
+            color: #1e3a8a;
+
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            color: #666;
+
+            line-height: 1.5;
+
+            margin-bottom: 20px;
+        }
+
+        .button {
+            display: inline-block;
+
+            padding: 11px 22px;
+
+            background: #1e3a8a;
+
+            color: white;
+
+            text-decoration: none;
+
+            border-radius: 5px;
+
+            font-weight: bold;
+        }
+
+        .button:hover {
+            background: #162d6b;
+        }
+
+
+        /* =========================
+           INFORMATION
+        ========================== */
+
+        .info {
+            background: #eef2ff;
+
+            padding: 25px;
+
+            border-radius: 10px;
+
+            margin-top: 20px;
+        }
+
+        .info h2 {
+            color: #1e3a8a;
+
+            margin-top: 0;
+        }
+
+        .info ul {
+            line-height: 2;
+
+            color: #555;
+        }
+
+
+        /* =========================
+           FOOTER
+        ========================== */
+
+        footer {
+            margin-top: 50px;
+
+            background: #222;
+
+            color: white;
+
+            text-align: center;
+
+            padding: 20px;
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================== */
+
+        @media (max-width: 700px) {
+
+            nav {
+                padding: 15px 20px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                width: 92%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         NAVBAR
+    ========================== -->
+
+    <nav>
+
+        <div class="logo">
+            🔧 SmartFix
+        </div>
+
+        <a href="/logout"
+           class="logout">
+
+            Logout
+
+        </a>
+
+    </nav>
+
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+
+    <div class="container">
+
+
+        <!-- WELCOME -->
+
+        <div class="welcome">
+
+            <h1>
+                Welcome, {{ name }} 👋
+            </h1>
+
+            <p>
+
+                Welcome to your SmartFix Customer Dashboard.
+                From here you can submit a repair request
+                and track the progress of your existing requests.
+
+            </p>
+
+        </div>
+
+
+        <!-- ACTION CARDS -->
+
+        <div class="cards">
+
+
+            <!-- REQUEST REPAIR -->
+
+            <div class="card">
+
+                <div class="icon">
+                    🔧
+                </div>
+
+                <h2>
+                    Request a Repair
+                </h2>
+
+                <p>
+
+                    Submit a new repair request by
+                    providing your service and problem details.
+
+                </p>
+
+                <a href="/repair-request"
+                   class="button">
+
+                    Request Repair
+
+                </a>
+
+            </div>
+
+
+            <!-- MY REQUESTS -->
+
+            <div class="card">
+
+                <div class="icon">
+                    📋
+                </div>
+
+                <h2>
+                    My Requests
+                </h2>
+
+                <p>
+
+                    View your submitted repair requests,
+                    technician assignment and current status.
+
+                </p>
+
+                <a href="/my-requests"
+                   class="button">
+
+                    View Requests
+
+                </a>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- INFORMATION -->
+
+        <div class="info">
+
+            <h2>
+                📌 How SmartFix Works
+            </h2>
+
+            <ul>
+
+                <li>
+                    Submit your repair request.
+                </li>
+
+                <li>
+                    Admin reviews and assigns a technician.
+                </li>
+
+                <li>
+                    Technician works on your repair.
+                </li>
+
+                <li>
+                    Track your repair status from My Requests.
+                </li>
+
+            </ul>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =========================
+         FOOTER
+    ========================== -->
+
+    <footer>
+
+        <p>
+            © 2026 SmartFix Management System
+        </p>
+
+    </footer>
+
+
+</body>
+
+</html>
+

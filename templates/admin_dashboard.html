@@ -1,0 +1,282 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard - SmartFix</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+        }
+
+        .header {
+            background: #222;
+            color: white;
+            padding: 18px 40px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h2 {
+            margin: 0;
+        }
+
+        .header a {
+            color: white;
+            text-decoration: none;
+            background: #d9534f;
+            padding: 9px 16px;
+            border-radius: 5px;
+        }
+
+        .container {
+            padding: 35px;
+        }
+
+        .welcome {
+            margin-bottom: 30px;
+        }
+
+        .welcome h1 {
+            margin-bottom: 8px;
+        }
+
+        .welcome p {
+            color: #666;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+
+            box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+
+            text-align: center;
+        }
+
+        .card h3 {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .number {
+            font-size: 35px;
+            font-weight: bold;
+            color: #222;
+        }
+
+        .menu {
+            margin-top: 35px;
+
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+
+            gap: 20px;
+        }
+
+        .menu a {
+            display: block;
+
+            background: white;
+
+            padding: 25px;
+
+            text-align: center;
+
+            text-decoration: none;
+
+            color: #222;
+
+            border-radius: 10px;
+
+            box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+
+            font-size: 18px;
+
+            font-weight: bold;
+        }
+
+        .menu a:hover {
+            background: #eeeeee;
+        }
+
+        @media (max-width: 800px) {
+
+            .cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .menu {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+        @media (max-width: 500px) {
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="header">
+
+        <h2>SmartFix Admin Panel</h2>
+
+        <a href="/admin-logout">
+            Logout
+        </a>
+
+    </div>
+
+
+    <div class="container">
+
+
+        <div class="welcome">
+
+            <h1>Admin Dashboard</h1>
+
+            <p>
+                Welcome to SmartFix Management System Admin Panel
+            </p>
+
+        </div>
+
+
+        <div class="cards">
+
+
+            <div class="card">
+
+                <h3>Total Customers</h3>
+
+                <div class="number">
+                    {{ customers }}
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>Total Repair Requests</h3>
+
+                <div class="number">
+                    {{ total_requests }}
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>Pending Requests</h3>
+
+                <div class="number">
+                    {{ pending_requests }}
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>Completed Requests</h3>
+
+                <div class="number">
+                    {{ completed_requests }}
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>Total Technicians</h3>
+
+                <div class="number">
+                    {{ technicians }}
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>Assigned Requests</h3>
+
+                <div class="number">
+                    {{ assigned_requests }}
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="menu">
+
+
+            <a href="/admin/repairs">
+                Manage Repair Requests
+            </a>
+
+
+            <a href="/admin/customers">
+                Manage Customers
+            </a>
+
+
+            <a href="/admin/technicians">
+                Manage Technicians
+            </a>
+
+
+        </div>
+
+
+    </div>
+
+
+</body>
+
+</html>
+

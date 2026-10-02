@@ -1,0 +1,359 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Manage Repair Requests - SmartFix</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f2f4f7;
+        }
+
+        .header {
+            background: #222;
+            color: white;
+            padding: 20px 40px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .back {
+            color: white;
+            text-decoration: none;
+            background: #444;
+            padding: 10px 16px;
+            border-radius: 6px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 35px auto;
+            padding: 20px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        .table-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+
+            box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #222;
+            color: white;
+        }
+
+        tr:hover {
+            background: #f8f8f8;
+        }
+
+        select {
+            padding: 8px;
+
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 8px 12px;
+
+            background: #222;
+            color: white;
+
+            border: none;
+            border-radius: 5px;
+
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #444;
+        }
+
+        .status-form,
+        .assign-form {
+            margin-bottom: 8px;
+        }
+
+        .not-assigned {
+            color: #777;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="header">
+
+        <h1>SmartFix - Repair Requests</h1>
+
+        <a href="/admin"
+           class="back">
+            ← Admin Dashboard
+        </a>
+
+    </div>
+
+
+    <div class="container">
+
+        <h2>Manage Repair Requests</h2>
+
+
+        <div class="table-box">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+
+                        <th>Customer</th>
+
+                        <th>Mobile</th>
+
+                        <th>Service</th>
+
+                        <th>Description</th>
+
+                        <th>Address</th>
+
+                        <th>Technician</th>
+
+                        <th>Status</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for repair in repairs %}
+
+                    <tr>
+
+                        <td>
+                            {{ repair["id"] }}
+                        </td>
+
+
+                        <td>
+                            {{ repair["customer_name"] }}
+                        </td>
+
+
+                        <td>
+                            {{ repair["mobile"] }}
+                        </td>
+
+
+                        <td>
+                            {{ repair["service_type"] }}
+                        </td>
+
+
+                        <td>
+                            {{ repair["description"] }}
+                        </td>
+
+
+                        <td>
+                            {{ repair["address"] }}
+                        </td>
+
+
+                        <td>
+
+                            {% if repair["technician_name"] %}
+
+                                <strong>
+                                    {{ repair["technician_name"] }}
+                                </strong>
+
+                            {% else %}
+
+                                <span class="not-assigned">
+                                    Not Assigned
+                                </span>
+
+                            {% endif %}
+
+
+                            <form
+                                method="POST"
+                                action="/admin/assign-technician/{{ repair['id'] }}"
+                                class="assign-form"
+                            >
+
+                                <select name="technician_id" required>
+
+                                    <option value="">
+                                        Select Technician
+                                    </option>
+
+                                    {% for technician in technicians %}
+
+                                    <option value="{{ technician['id'] }}">
+
+                                        {{ technician["name"] }}
+                                        -
+                                        {{ technician["specialization"] }}
+
+                                    </option>
+
+                                    {% endfor %}
+
+                                </select>
+
+
+                                <button type="submit">
+                                    Assign
+                                </button>
+
+                            </form>
+
+                        </td>
+
+
+                        <td>
+
+                            <form
+                                method="POST"
+                                action="/admin/update-status/{{ repair['id'] }}"
+                                class="status-form"
+                            >
+
+                                <select name="status">
+
+                                    <option
+                                        value="Pending"
+                                        {% if repair["status"] == "Pending" %}
+                                        selected
+                                        {% endif %}
+                                    >
+                                        Pending
+                                    </option>
+
+
+                                    <option
+                                        value="Assigned"
+                                        {% if repair["status"] == "Assigned" %}
+                                        selected
+                                        {% endif %}
+                                    >
+                                        Assigned
+                                    </option>
+
+
+                                    <option
+                                        value="In Progress"
+                                        {% if repair["status"] == "In Progress" %}
+                                        selected
+                                        {% endif %}
+                                    >
+                                        In Progress
+                                    </option>
+
+
+                                    <option
+                                        value="Completed"
+                                        {% if repair["status"] == "Completed" %}
+                                        selected
+                                        {% endif %}
+                                    >
+                                        Completed
+                                    </option>
+
+                                </select>
+
+
+                                <button type="submit">
+                                    Update
+                                </button>
+
+                            </form>
+
+                            <strong>
+                                Current:
+                                {{ repair["status"] }}
+                            </strong>
+
+                        </td>
+
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+
+                        <td colspan="8"
+                            style="text-align:center;">
+
+                            No repair requests found.
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+</body>
+
+</html>

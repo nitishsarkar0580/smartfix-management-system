@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Login - SmartFix</title>
+
+    <style>
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f2f4f7;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            min-height: 100vh;
+        }
+
+        .login-box {
+            width: 380px;
+            background: white;
+
+            padding: 35px;
+
+            border-radius: 12px;
+
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 8px;
+            color: #222;
+        }
+
+        .subtitle {
+            color: #777;
+            margin-bottom: 25px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+
+            margin: 10px 0;
+
+            border: 1px solid #ccc;
+            border-radius: 6px;
+
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+
+            padding: 12px;
+
+            margin-top: 15px;
+
+            background: #222;
+            color: white;
+
+            border: none;
+            border-radius: 6px;
+
+            font-size: 16px;
+
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #444;
+        }
+
+        .back {
+            display: block;
+
+            margin-top: 20px;
+
+            text-decoration: none;
+            color: #555;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="login-box">
+
+        <h1>SmartFix</h1>
+
+        <p class="subtitle">Admin Login</p>
+
+        <form method="POST">
+
+            <input
+                type="text"
+                name="username"
+                placeholder="Admin Username"
+                required
+            >
+
+            <input
+                type="password"
+                name="password"
+                placeholder="Admin Password"
+                required
+            >
+
+            <button type="submit">
+                Login as Admin
+            </button>
+
+        </form>
+
+        <a href="/" class="back">
+            ← Back to Home
+        </a>
+
+    </div>
+
+</body>
+
+</html>
