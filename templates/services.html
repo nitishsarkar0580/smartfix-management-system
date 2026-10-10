@@ -1,0 +1,107 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our Services | SmartFix</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Arial,Helvetica,sans-serif;background:#f7f9f8;color:#202525;line-height:1.7}
+a{text-decoration:none}
+.navbar{position:sticky;top:0;z-index:1000;background:#17221f;padding:17px 7%;display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;box-shadow:0 2px 12px rgba(0,0,0,.12)}
+.logo{color:white;font-size:24px;font-weight:bold}
+.logo span{color:#43c6a5}
+.nav-links{list-style:none;display:flex;align-items:center;gap:25px;flex-wrap:wrap}
+.nav-links a{color:#f4f7f6;font-size:15px}
+.nav-links a:hover{color:#43c6a5}
+.login-btn{padding:9px 17px;border:1px solid #43c6a5;border-radius:6px}
+.register-btn{padding:9px 17px;background:#43a88d;border-radius:6px}
+.page-hero{padding:75px 7%;background:#eef5f2;text-align:center}
+.badge{display:inline-block;background:#dcefe7;color:#287963;padding:6px 14px;border-radius:25px;font-size:12px;font-weight:bold;letter-spacing:1px;margin-bottom:18px}
+h1{font-size:clamp(35px,5vw,48px);line-height:1.2;color:#17221f;margin-bottom:18px}
+h1 span{color:#32977d}
+.page-hero p{max-width:760px;margin:auto;color:#59635f;font-size:17px}
+.section{padding:70px 7%}
+.container{max-width:1100px;margin:auto}
+.heading{text-align:center;margin-bottom:38px}
+.heading h2{font-size:32px;color:#17221f;margin-bottom:12px}
+.heading p{color:#68736f}
+.service-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+.service{background:white;padding:30px;border-radius:12px;border:1px solid #e3e9e6;box-shadow:0 5px 17px rgba(0,0,0,.05);transition:.3s}
+.service:hover{transform:translateY(-4px);box-shadow:0 10px 25px rgba(0,0,0,.09)}
+.icon{font-size:35px;margin-bottom:12px}
+.service h3{color:#287963;margin-bottom:10px;font-size:20px}
+.service p{color:#68736f}
+.cta{text-align:center;background:#eef5f2}
+.cta h2{color:#17221f;font-size:30px;margin-bottom:10px}
+.cta p{color:#68736f}
+.btn{display:inline-block;margin-top:20px;background:#32977d;color:white;padding:12px 23px;border-radius:7px;font-weight:bold}
+.btn:hover{background:#267962}
+footer{background:#17221f;color:#dce5e1;text-align:center;padding:25px}
+footer p{margin:6px}
+footer span{color:#43c6a5}
+@media(max-width:768px){.navbar{flex-direction:column;gap:15px}.nav-links{justify-content:center;gap:12px}.service-list{grid-template-columns:1fr}.page-hero{padding:55px 6%}.section{padding:50px 6%}}
+@media(max-width:520px){.nav-links{gap:10px}.nav-links a{font-size:13px}}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+<a href="/" class="logo">🔧 Smart<span>Fix</span></a>
+<ul class="nav-links">
+<li><a href="/">Home</a></li>
+<li><a href="/about">About</a></li>
+<li><a href="/services">Services</a></li>
+<li><a href="/contact">Contact</a></li>
+<li><a href="/login" class="login-btn">Login</a></li>
+<li><a href="/register" class="register-btn">Register</a></li>
+</ul>
+</nav>
+
+<main>
+<section class="page-hero">
+<span class="badge">OUR SERVICES</span>
+<h1>Smart Solutions for <span>Repair Management</span></h1>
+<p>Explore the main features of SmartFix, designed to organize repair requests, customer access, technician assignments and service progress.</p>
+</section>
+
+<section class="section">
+<div class="container">
+<div class="heading">
+<h2>What We Offer</h2>
+<p>Core functions available through the SmartFix Management System.</p>
+</div>
+
+<div class="service-list">
+<div class="service"><div class="icon">🔧</div><h3>Electronic Device Repair Requests</h3><p>Customers can submit repair requirements through an online request form.</p></div>
+
+<div class="service"><div class="icon">👤</div><h3>Customer Registration and Login</h3><p>Customers can register and sign in to access the repair request workflow.</p></div>
+
+<div class="service"><div class="icon">📍</div><h3>Repair Request Tracking</h3><p>Customers can check the current status of their repair requests.</p></div>
+
+<div class="service"><div class="icon">🧑‍🔧</div><h3>Technician Repair Management</h3><p>Technicians can view assigned repair requests and update their progress.</p></div>
+
+<div class="service"><div class="icon">🛠️</div><h3>Administrator Dashboard</h3><p>Administrators can manage customers, technicians and repair requests.</p></div>
+
+<div class="service"><div class="icon">📋</div><h3>Organized Service Workflow</h3><p>Repair-related activities are grouped in one platform to make management easier.</p></div>
+</div>
+</div>
+</section>
+
+<section class="section cta">
+<div class="container">
+<h2>Ready to Use SmartFix?</h2>
+<p>Customers can create an account or sign in to continue.</p>
+<a href="/register" class="btn">Get Started →</a>
+</div>
+</section>
+</main>
+
+<footer>
+<p>© 2026 <span>SmartFix Management System</span></p>
+<p>Developed by Nitish Sarkar</p>
+</footer>
+</body>
+</html>
+
