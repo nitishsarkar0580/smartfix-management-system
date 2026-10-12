@@ -1,17 +1,58 @@
-from flask import Flask, render_template, request, redirect, session
+from flask import Flask, render_template, request, redirect, session, url_for
 import sqlite3
 import os
+import smtplib
+import hashlib
+from email.message import EmailMessage
+from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-app.secret_key = "smartfix_secret_key"
+app.secret_key = os.environ.get("SECRET_KEY", "local-development-only-change-me")
 
-DATABASE = "smartfix.db"
+DATABASE = os.environ.get("DATABASE_PATH", "smartfix.db")
 
 
 def get_db_connection():
     conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
     return conn
+
+
+def password_matches(stored, provided):
+    if stored.startswith(("scrypt:", "pbkdf2:")):
+        return check_password_hash(stored, provided)
+    return stored == provided
+
+
+def reset_serializer():
+    return URLSafeTimedSerializer(
+        app.secret_key,
+        salt="smartfix-customer-reset-v1"
+    )
+
+
+def send_reset_email(recipient, link):
+    sender = os.environ.get("SMTP_EMAIL")
+    password = os.environ.get("SMTP_PASSWORD")
+
+    if not sender or not password:
+        raise RuntimeError("SMTP settings missing")
+
+    msg = EmailMessage()
+    msg["Subject"] = "SmartFix Password Reset"
+    msg["From"] = sender
+    msg["To"] = recipient
+    msg.set_content(
+        "Reset your SmartFix password using this link "
+        "(valid for 15 minutes):\n"
+        + link
+        + "\n\nIf you did not request this, ignore this email."
+    )
+
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=20) as smtp:
+        smtp.login(sender, password)
+        smtp.send_message(msg)
 
 
 def create_database():
@@ -105,17 +146,22 @@ def create_technician_table():
 @app.route("/")
 def home():
     return render_template("index.html")
+
+
 @app.route("/about")
 def about():
     return render_template("about.html")
+
 
 @app.route("/services")
 def services():
     return render_template("services.html")
 
+
 @app.route("/contact")
 def contact():
     return render_template("contact.html")
+
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -133,7 +179,13 @@ def register():
                 INSERT INTO customers
                 (name, email, mobile, password, address)
                 VALUES (?, ?, ?, ?, ?)
-            """, (name, email, mobile, password, address))
+            """, (
+                name,
+                email,
+                mobile,
+                generate_password_hash(password),
+                address
+            ))
 
             conn.commit()
 
@@ -155,21 +207,143 @@ def login():
 
         conn = get_db_connection()
 
-        customer = conn.execute("""
-            SELECT * FROM customers
-            WHERE email = ? AND password = ?
-        """, (email, password)).fetchone()
+        customer = conn.execute(
+            "SELECT * FROM customers WHERE email = ?",
+            (email,)
+        ).fetchone()
+
+        if customer and password_matches(customer["password"], password):
+
+            if not customer["password"].startswith(("scrypt:", "pbkdf2:")):
+                conn.execute(
+                    "UPDATE customers SET password = ? WHERE id = ?",
+                    (generate_password_hash(password), customer["id"])
+                )
+                conn.commit()
+
+            conn.close()
+
+            session["customer_id"] = customer["id"]
+            session["customer_name"] = customer["name"]
+
+            return redirect("/dashboard")
+
+        conn.close()
+        return "Invalid email or password."
+
+    return render_template("login.html")
+
+
+@app.route("/forgot-password", methods=["GET", "POST"])
+def forgot_password():
+    if request.method == "POST":
+        email = request.form.get("email", "").strip().lower()
+
+        conn = get_db_connection()
+
+        customer = conn.execute(
+            "SELECT id, email, password FROM customers "
+            "WHERE lower(email) = ?",
+            (email,)
+        ).fetchone()
 
         conn.close()
 
         if customer:
-            session["customer_id"] = customer["id"]
-            session["customer_name"] = customer["name"]
-            return redirect("/dashboard")
+            fingerprint = hashlib.sha256(
+                customer["password"].encode()
+            ).hexdigest()
 
-        return "Invalid email or password."
+            token = reset_serializer().dumps({
+                "id": customer["id"],
+                "fp": fingerprint
+            })
 
-    return render_template("login.html")
+            link = url_for(
+                "reset_password",
+                token=token,
+                _external=True
+            )
+
+            try:
+                send_reset_email(customer["email"], link)
+
+            except (smtplib.SMTPException, OSError, RuntimeError):
+                app.logger.exception(
+                    "Could not send password reset email"
+                )
+                return (
+                    "Email service is temporarily unavailable. "
+                    "Please try again later.",
+                    503
+                )
+
+        return (
+            "If this email is registered, a password reset "
+            "link has been sent. Check your inbox."
+        )
+
+    return render_template("forgot_password.html")
+
+
+@app.route("/reset-password/<token>", methods=["GET", "POST"])
+def reset_password(token):
+    try:
+        data = reset_serializer().loads(token, max_age=900)
+
+    except (BadSignature, SignatureExpired):
+        return (
+            "This reset link is invalid or expired. "
+            "Request a new one.",
+            400
+        )
+
+    conn = get_db_connection()
+
+    customer = conn.execute(
+        "SELECT id, password FROM customers WHERE id = ?",
+        (data.get("id"),)
+    ).fetchone()
+
+    if (
+        not customer
+        or hashlib.sha256(
+            customer["password"].encode()
+        ).hexdigest() != data.get("fp")
+    ):
+        conn.close()
+        return (
+            "This reset link is invalid or has already been used.",
+            400
+        )
+
+    if request.method == "POST":
+        password = request.form.get("password", "")
+        confirm = request.form.get("confirm_password", "")
+
+        if len(password) < 8 or password != confirm:
+            conn.close()
+            return (
+                "Passwords must match and contain "
+                "at least 8 characters.",
+                400
+            )
+
+        conn.execute(
+            "UPDATE customers SET password = ? WHERE id = ?",
+            (
+                generate_password_hash(password),
+                customer["id"]
+            )
+        )
+
+        conn.commit()
+        conn.close()
+
+        return redirect(url_for("login"))
+
+    conn.close()
+    return render_template("reset_password.html")
 
 
 @app.route("/dashboard")
