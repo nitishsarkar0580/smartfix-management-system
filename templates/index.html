@@ -1,619 +1,1354 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>SmartFix Management System</title>
+<title>SmartFix | Smart Repair Management</title>
+<meta name="description" content="SmartFix helps customers request repairs, track service progress and connect with technicians through one simple platform.">
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            scroll-behavior: smooth;
-        }
+<style>
+:root {
+    --dark: #102820;
+    --dark2: #183b30;
+    --green: #20b486;
+    --green2: #168b68;
+    --light: #f5f8f6;
+    --text: #24352e;
+    --muted: #697a72;
+    --border: #e3eae6;
+}
 
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f7f9f8;
-            color: #202525;
-        }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-        /* NAVBAR */
-        .navbar {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            background: #17221f;
-            padding: 17px 7%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.12);
-        }
+html {
+    scroll-behavior: smooth;
+}
 
-        .logo {
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-        }
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #ffffff;
+    color: var(--text);
+    line-height: 1.6;
+}
 
-        .nav-links {
-            list-style: none;
-            display: flex;
-            align-items: center;
-            gap: 25px;
-        }
+a {
+    text-decoration: none;
+}
 
-        .nav-links a {
-            color: #f4f7f6;
-            text-decoration: none;
-            font-size: 15px;
-            transition: 0.3s;
-        }
+.container {
+    width: 88%;
+    max-width: 1180px;
+    margin: auto;
+}
 
-        .nav-links a:hover {
-            color: #43c6a5;
-        }
+/* NAVBAR */
 
-        .login-btn {
-            padding: 9px 17px;
-            border: 1px solid #43c6a5;
-            border-radius: 6px;
-        }
+.navbar {
+    background: #ffffff;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
 
-        .register-btn {
-            padding: 9px 17px;
-            background: #43a88d;
-            border-radius: 6px;
-        }
+.nav-container {
+    min-height: 78px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+}
 
-        .register-btn:hover {
-            color: white !important;
-        }
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    color: var(--dark);
+    font-size: 25px;
+    font-weight: 800;
+}
 
-        /* HERO */
-        .hero {
-            min-height: 570px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 70px 20px;
-            background: #eef5f2;
-        }
+.logo-icon {
+    width: 43px;
+    height: 43px;
+    background: var(--dark);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    font-size: 24px;
+}
 
-        .hero-content {
-            max-width: 850px;
-        }
+.logo span {
+    color: var(--green2);
+}
 
-        .hero h1 {
-            font-size: 48px;
-            color: #17221f;
-            margin-bottom: 20px;
-        }
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    list-style: none;
+}
 
-        .hero h1 span {
-            color: #32977d;
-        }
+.nav-links a {
+    color: #34473e;
+    font-size: 14px;
+    font-weight: 600;
+    transition: 0.2s;
+}
 
-        .hero p {
-            max-width: 700px;
-            margin: auto;
-            color: #59635f;
-            font-size: 18px;
-            line-height: 1.7;
-            margin-bottom: 32px;
-        }
+.nav-links a:hover {
+    color: var(--green2);
+}
 
-        .hero-buttons a {
-            display: inline-block;
-            text-decoration: none;
-            padding: 13px 25px;
-            margin: 5px;
-            border-radius: 7px;
-            font-weight: bold;
-        }
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
 
-        .primary-btn {
-            background: #32977d;
-            color: white;
-        }
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 13px 23px;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 700;
+    transition: 0.25s;
+}
 
-        .primary-btn:hover {
-            background: #267962;
-        }
+.btn-primary {
+    background: var(--green);
+    color: #ffffff;
+}
 
-        .secondary-btn {
-            border: 1px solid #32977d;
-            color: #287963;
-            background: white;
-        }
+.btn-primary:hover {
+    background: var(--green2);
+    transform: translateY(-2px);
+}
 
-        /* SECTION */
-        .section {
-            padding: 75px 7%;
-            text-align: center;
-        }
+.btn-outline {
+    border: 1px solid #d4e2da;
+    color: var(--dark);
+    background: white;
+}
 
-        .section h2 {
-            font-size: 32px;
-            color: #17221f;
-            margin-bottom: 12px;
-        }
+.btn-outline:hover {
+    background: #edf5f0;
+}
 
-        .section-intro {
-            color: #68736f;
-            margin-bottom: 38px;
-        }
+.menu-toggle {
+    display: none;
+    border: 0;
+    background: var(--dark);
+    color: white;
+    padding: 9px 13px;
+    border-radius: 8px;
+    font-size: 22px;
+    cursor: pointer;
+}
 
-        /* CARDS */
-        .cards {
-            display: flex;
-            justify-content: center;
-            gap: 25px;
-            flex-wrap: wrap;
-        }
+/* HERO */
 
-        .card {
-            width: 285px;
-            background: white;
-            padding: 32px 23px;
-            border-radius: 12px;
-            border: 1px solid #e3e9e6;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.06);
-            transition: 0.3s;
-        }
+.hero {
+    background: linear-gradient(135deg, #102820 0%, #204d3d 100%);
+    color: white;
+    overflow: hidden;
+}
 
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.10);
-        }
+.hero-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    align-items: center;
+    gap: 60px;
+    min-height: 600px;
+    padding-top: 85px;
+    padding-bottom: 85px;
+}
 
-        .icon {
-            font-size: 38px;
-        }
+.hero-badge {
+    display: inline-block;
+    padding: 8px 15px;
+    background: rgba(32,180,134,0.15);
+    border: 1px solid rgba(84,221,171,0.3);
+    color: #a6f2d5;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 25px;
+}
 
-        .card h3 {
-            color: #287963;
-            margin: 16px 0 10px;
-        }
+.hero h1 {
+    font-size: clamp(38px, 5vw, 61px);
+    line-height: 1.13;
+    letter-spacing: -1.5px;
+    margin-bottom: 25px;
+}
 
-        .card p {
-            color: #68736f;
-            line-height: 1.6;
-        }
+.hero h1 span {
+    color: #55ddb0;
+}
 
-        .card a {
-            color: #287963;
-            text-decoration: none;
-            font-weight: bold;
-        }
+.hero p {
+    color: #c3d9cd;
+    font-size: 17px;
+    max-width: 540px;
+    margin-bottom: 32px;
+}
 
-        /* ABOUT */
-        .about {
-            background: white;
-        }
+.hero-buttons {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
 
-        .about-box {
-            max-width: 850px;
-            margin: auto;
-            padding: 35px;
-            border: 1px solid #e3e9e6;
-            border-radius: 12px;
-            line-height: 1.8;
-            color: #5d6864;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.05);
-        }
+.hero .btn-outline {
+    background: transparent;
+    color: white;
+    border-color: #688878;
+}
 
-        /* SERVICES */
-        .service-list {
-            max-width: 900px;
-            margin: auto;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-        }
+.hero .btn-outline:hover {
+    background: rgba(255,255,255,0.1);
+}
 
-        .service {
-            background: white;
-            padding: 27px;
-            text-align: left;
-            border-radius: 10px;
-            border: 1px solid #e3e9e6;
-            box-shadow: 0 5px 17px rgba(0,0,0,0.05);
-        }
+/* HERO VISUAL */
 
-        .service h3 {
-            color: #287963;
-            margin-bottom: 10px;
-        }
+.hero-visual {
+    position: relative;
+}
 
-        .service p {
-            color: #68736f;
-            line-height: 1.6;
-        }
+.dashboard-preview {
+    background: #ffffff;
+    color: var(--text);
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 30px 70px rgba(0,0,0,0.25);
+    transform: rotate(2deg);
+}
 
-        /* PORTALS */
-        .portal {
-            background: #eef5f2;
-        }
+.preview-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 18px;
+    margin-bottom: 20px;
+}
 
-        /* CONTACT */
-        .contact {
-            background: white;
-        }
+.preview-top strong {
+    font-size: 17px;
+}
 
-        .contact-box {
-            max-width: 560px;
-            margin: auto;
-            background: #f7f9f8;
-            padding: 30px;
-            border-radius: 12px;
-            border: 1px solid #e1e8e4;
-        }
+.preview-tag {
+    color: var(--green2);
+    background: #e6f8f0;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+}
 
-        .contact-box p {
-            margin: 16px 0;
-            color: #4e5955;
-            font-size: 16px;
-        }
+.preview-title {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 13px;
+}
 
-        /* FOOTER */
-        footer {
-            background: #17221f;
-            color: #dce5e1;
-            text-align: center;
-            padding: 25px;
-        }
+.preview-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: #f7faf8;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 12px;
+}
 
-        footer p {
-            margin: 6px;
-        }
+.preview-item strong {
+    font-size: 13px;
+}
 
-        /* MOBILE */
-        @media (max-width: 768px) {
+.preview-item small {
+    display: block;
+    color: var(--muted);
+    margin-top: 3px;
+}
 
-            .navbar {
-                flex-direction: column;
-                gap: 15px;
-            }
+.status {
+    padding: 6px 9px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+}
 
-            .nav-links {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 12px;
-            }
+.pending {
+    background: #fff4da;
+    color: #a26a00;
+}
 
-            .hero h1 {
-                font-size: 36px;
-            }
+.progress {
+    background: #e6efff;
+    color: #3765ad;
+}
 
-            .hero p {
-                font-size: 16px;
-            }
+.completed {
+    background: #def7e9;
+    color: #16794b;
+}
 
-            .service-list {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+.preview-bottom {
+    margin-top: 18px;
+    background: #e9f8f0;
+    border-radius: 9px;
+    padding: 15px;
+    color: #267a56;
+    font-size: 12px;
+    text-align: center;
+}
+
+/* SECTIONS */
+
+.section {
+    padding: 95px 0;
+}
+
+.section-light {
+    background: var(--light);
+}
+
+.section-heading {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto 50px;
+}
+
+.section-label {
+    display: inline-block;
+    color: var(--green2);
+    font-weight: 800;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+
+.section-heading h2 {
+    font-size: clamp(28px, 4vw, 39px);
+    line-height: 1.25;
+    letter-spacing: -0.7px;
+    color: var(--dark);
+    margin-bottom: 15px;
+}
+
+.section-heading p {
+    color: var(--muted);
+    font-size: 16px;
+}
+
+/* FEATURE CARDS */
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+.feature-card {
+    padding: 35px 28px;
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    background: white;
+    transition: 0.3s;
+}
+
+.feature-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 35px rgba(16,40,32,0.09);
+    border-color: #b7dfcc;
+}
+
+.feature-icon {
+    width: 62px;
+    height: 62px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e7f7ef;
+    border-radius: 14px;
+    font-size: 28px;
+    margin-bottom: 23px;
+}
+
+.feature-card h3 {
+    font-size: 19px;
+    color: var(--dark);
+    margin-bottom: 12px;
+}
+
+.feature-card p {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+/* HOW IT WORKS */
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 35px;
+}
+
+.step {
+    text-align: center;
+    padding: 15px;
+}
+
+.step-number {
+    width: 65px;
+    height: 65px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 22px;
+    border-radius: 50%;
+    background: var(--dark);
+    color: white;
+    font-size: 23px;
+    font-weight: 800;
+}
+
+.step h3 {
+    margin-bottom: 12px;
+    font-size: 19px;
+}
+
+.step p {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+/* ABOUT */
+
+.about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 65px;
+    align-items: center;
+}
+
+.about-visual {
+    min-height: 370px;
+    background: linear-gradient(135deg, #d9f3e5, #b4e4d0);
+    border-radius: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.about-symbol {
+    width: 170px;
+    height: 170px;
+    border-radius: 35px;
+    background: var(--dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 85px;
+    box-shadow: 0 25px 45px rgba(16,40,32,0.18);
+}
+
+.about-content h2 {
+    font-size: clamp(29px, 4vw, 39px);
+    color: var(--dark);
+    line-height: 1.25;
+    margin-bottom: 22px;
+}
+
+.about-content p {
+    color: var(--muted);
+    margin-bottom: 20px;
+}
+
+.about-points {
+    list-style: none;
+    margin-bottom: 27px;
+}
+
+.about-points li {
+    padding: 8px 0;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.about-points li::before {
+    content: "✓";
+    color: var(--green2);
+    margin-right: 12px;
+    font-weight: bold;
+}
+
+/* SERVICES */
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+
+.service-card {
+    display: flex;
+    gap: 20px;
+    padding: 30px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 15px;
+}
+
+.service-card .feature-icon {
+    flex-shrink: 0;
+    margin-bottom: 0;
+}
+
+.service-card h3 {
+    margin-bottom: 9px;
+    color: var(--dark);
+}
+
+.service-card p {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+/* PORTALS */
+
+.portal-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+.portal-card {
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 35px 28px;
+    background: white;
+    transition: 0.25s;
+}
+
+.portal-card:hover {
+    box-shadow: 0 15px 35px rgba(16,40,32,0.08);
+    transform: translateY(-4px);
+}
+
+.portal-card h3 {
+    margin-bottom: 12px;
+    font-size: 20px;
+}
+
+.portal-card p {
+    color: var(--muted);
+    font-size: 14px;
+    min-height: 70px;
+}
+
+.portal-link {
+    display: inline-block;
+    color: var(--green2);
+    font-weight: 800;
+    font-size: 14px;
+    margin-top: 23px;
+}
+
+/* CTA */
+
+.cta {
+    background: var(--dark);
+    color: white;
+    border-radius: 22px;
+    padding: 65px 35px;
+    text-align: center;
+}
+
+.cta h2 {
+    font-size: clamp(28px, 4vw, 39px);
+    margin-bottom: 15px;
+}
+
+.cta p {
+    color: #c2d8cb;
+    max-width: 550px;
+    margin: 0 auto 28px;
+}
+
+/* CONTACT */
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.contact-card {
+    background: white;
+    border: 1px solid var(--border);
+    padding: 30px;
+    border-radius: 14px;
+    text-align: center;
+}
+
+.contact-card .feature-icon {
+    margin: 0 auto 18px;
+}
+
+.contact-card h3 {
+    margin-bottom: 10px;
+}
+
+.contact-card p,
+.contact-card a {
+    color: var(--muted);
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+/* FOOTER */
+
+footer {
+    background: #0c2119;
+    color: #d4e3d9;
+    padding: 60px 0 25px;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr;
+    gap: 45px;
+    margin-bottom: 45px;
+}
+
+.footer-logo {
+    color: white;
+    font-size: 26px;
+    font-weight: 800;
+    margin-bottom: 17px;
+}
+
+.footer-logo span {
+    color: #55ddb0;
+}
+
+.footer-grid p {
+    color: #a7bdb0;
+    font-size: 14px;
+    max-width: 360px;
+}
+
+.footer-grid h4 {
+    color: white;
+    margin-bottom: 18px;
+}
+
+.footer-grid ul {
+    list-style: none;
+}
+
+.footer-grid li {
+    margin-bottom: 11px;
+}
+
+.footer-grid a {
+    color: #a7bdb0;
+    font-size: 14px;
+}
+
+.footer-grid a:hover {
+    color: #55ddb0;
+}
+
+.footer-bottom {
+    border-top: 1px solid #2c4437;
+    padding-top: 25px;
+    text-align: center;
+    color: #91aa9a;
+    font-size: 13px;
+}
+
+/* MOBILE */
+
+@media (max-width: 950px) {
+    .hero-grid,
+    .about-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-grid {
+        gap: 45px;
+    }
+
+    .hero-visual {
+        max-width: 550px;
+        margin: auto;
+        width: 100%;
+    }
+
+    .feature-grid,
+    .portal-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        width: 90%;
+    }
+
+    .nav-container {
+        min-height: 70px;
+        flex-wrap: wrap;
+    }
+
+    .menu-toggle {
+        display: block;
+        margin-left: auto;
+    }
+
+    .nav-links,
+    .nav-actions {
+        display: none;
+        width: 100%;
+    }
+
+    .navbar.open .nav-links,
+    .navbar.open .nav-actions {
+        display: flex;
+    }
+
+    .nav-links {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        padding: 12px 0;
+    }
+
+    .nav-links li a {
+        display: block;
+        padding: 11px 0;
+    }
+
+    .nav-actions {
+        padding-bottom: 18px;
+    }
+
+    .hero-grid {
+        padding-top: 65px;
+        padding-bottom: 65px;
+    }
+
+    .hero h1 {
+        letter-spacing: -0.8px;
+    }
+
+    .section {
+        padding: 65px 0;
+    }
+
+    .feature-grid,
+    .portal-grid,
+    .services-grid,
+    .steps-grid,
+    .contact-grid,
+    .footer-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .service-card {
+        padding: 24px;
+    }
+
+    .portal-card p {
+        min-height: auto;
+    }
+
+    .about-visual {
+        min-height: 280px;
+    }
+
+    .dashboard-preview {
+        transform: none;
+        padding: 17px;
+    }
+
+    .cta {
+        padding: 50px 22px;
+    }
+
+    .footer-grid {
+        gap: 30px;
+    }
+}
+
+@media (max-width: 380px) {
+    .hero-buttons,
+    .nav-actions {
+        flex-direction: column;
+    }
+
+    .hero-buttons .btn,
+    .nav-actions .btn {
+        width: 100%;
+    }
+
+    .preview-item {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+</style>
 </head>
 
 <body>
 
-    <!-- NAVBAR -->
-    <nav class="navbar">
+<!-- NAVBAR -->
 
-        <div class="logo">
-            🔧 SmartFix
-        </div>
+<nav class="navbar" id="navbar">
+    <div class="container nav-container">
 
-        <ul class="nav-links">
+        <a href="/" class="logo">
+            <span class="logo-icon">🔧</span>
+            Smart<span>Fix</span>
+        </a>
 
+        <button
+            class="menu-toggle"
+            id="menuToggle"
+            aria-label="Toggle navigation"
+            aria-expanded="false"
+            aria-controls="mainMenu"
+        >
+            ☰
+        </button>
+
+        <ul class="nav-links" id="mainMenu">
             <li><a href="/">Home</a></li>
             <li><a href="/about">About</a></li>
             <li><a href="/services">Services</a></li>
             <li><a href="/contact">Contact</a></li>
-
-            <li>
-                <a href="/login" class="login-btn">Login</a>
-            </li>
-
-            <li>
-                <a href="/register" class="register-btn">Register</a>
-            </li>
-
         </ul>
 
-    </nav>
+        <div class="nav-actions">
+            <a href="/login" class="btn btn-outline">Login</a>
+            <a href="/register" class="btn btn-primary">Get Started →</a>
+        </div>
 
-    <!-- HERO -->
-    <section class="hero" id="home">
+    </div>
+</nav>
+
+<!-- HERO -->
+
+<section class="hero">
+    <div class="container hero-grid">
 
         <div class="hero-content">
 
+            <div class="hero-badge">
+                ✦ SMART REPAIR MANAGEMENT PLATFORM
+            </div>
+
             <h1>
-                SmartFix <span>Management System</span>
+                Repair Management
+                Made <span>Simple & Smart.</span>
             </h1>
 
             <p>
-                A simple and efficient platform for managing repair
-                requests, customers and technicians in one place.
+                A modern platform to manage repair requests,
+                connect customers with technicians and
+                track service progress — all in one place.
             </p>
 
             <div class="hero-buttons">
-
-                <a href="/register" class="primary-btn">
-                    Get Started
+                <a href="/register" class="btn btn-primary">
+                    Get Started Free →
                 </a>
 
-                <a href="#services" class="secondary-btn">
+                <a href="/services" class="btn btn-outline">
                     Explore Services
                 </a>
+            </div>
+
+        </div>
+
+        <div class="hero-visual">
+
+            <div class="dashboard-preview">
+
+                <div class="preview-top">
+                    <strong>🔧 SmartFix Dashboard</strong>
+                    <span class="preview-tag">DEMO PREVIEW</span>
+                </div>
+
+                <p class="preview-title">
+                    Repair Request Overview
+                </p>
+
+                <div class="preview-item">
+                    <div>
+                        <strong>🔧 Repair Request #001</strong>
+                        <small>Service request submitted</small>
+                    </div>
+                    <span class="status pending">Pending</span>
+                </div>
+
+                <div class="preview-item">
+                    <div>
+                        <strong>👨‍🔧 Repair Request #002</strong>
+                        <small>Technician working on request</small>
+                    </div>
+                    <span class="status progress">In Progress</span>
+                </div>
+
+                <div class="preview-item">
+                    <div>
+                        <strong>✅ Repair Request #003</strong>
+                        <small>Service marked as completed</small>
+                    </div>
+                    <span class="status completed">Completed</span>
+                </div>
+
+                <div class="preview-bottom">
+                    ✓ Manage requests from one organized dashboard
+                </div>
 
             </div>
 
         </div>
 
-    </section>
+    </div>
+</section>
 
-    <!-- FEATURES -->
-    <section class="section">
+<!-- FEATURES -->
 
-        <h2>Why Choose SmartFix?</h2>
+<section class="section">
 
-        <p class="section-intro">
-            Everything you need to manage repair services efficiently.
-        </p>
+    <div class="container">
 
-        <div class="cards">
+        <div class="section-heading">
+            <span class="section-label">WHY SMARTFIX</span>
+            <h2>Everything You Need in One Platform</h2>
+            <p>
+                Simplifying repair service management
+                for customers, technicians and administrators.
+            </p>
+        </div>
 
-            <div class="card">
+        <div class="feature-grid">
 
-                <div class="icon">📝</div>
-
-                <h3>Easy Repair Requests</h3>
-
+            <div class="feature-card">
+                <div class="feature-icon">📝</div>
+                <h3>Easy Repair Booking</h3>
                 <p>
-                    Customers can quickly submit their repair
-                    requirements through the system.
+                    Submit repair requests through a simple
+                    and organized online form.
                 </p>
-
             </div>
 
-            <div class="card">
-
-                <div class="icon">👨‍🔧</div>
-
+            <div class="feature-card">
+                <div class="feature-icon">👨‍🔧</div>
                 <h3>Technician Management</h3>
-
                 <p>
                     Administrators can assign repair requests
-                    to suitable technicians.
+                    to technicians and manage their work.
                 </p>
-
             </div>
 
-            <div class="card">
-
-                <div class="icon">📊</div>
-
-                <h3>Track Progress</h3>
-
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Real-Time Status View</h3>
                 <p>
-                    Customers can easily track the current
-                    status of their repair requests.
+                    View the latest recorded status of
+                    repair requests from your dashboard.
                 </p>
-
             </div>
 
         </div>
 
-    </section>
+    </div>
 
-    <!-- ABOUT -->
-    <section class="section about" id="about">
+</section>
 
-        <h2>About SmartFix</h2>
+<!-- HOW IT WORKS -->
 
-        <p class="section-intro">
-            Making repair service management simple and organized.
-        </p>
+<section class="section section-light">
 
-        <div class="about-box">
+    <div class="container">
+
+        <div class="section-heading">
+            <span class="section-label">SIMPLE PROCESS</span>
+            <h2>How SmartFix Works</h2>
+            <p>
+                Manage your repair request in three simple steps.
+            </p>
+        </div>
+
+        <div class="steps-grid">
+
+            <div class="step">
+                <div class="step-number">01</div>
+                <h3>Create an Account</h3>
+                <p>
+                    Register as a customer and log in
+                    to your SmartFix dashboard.
+                </p>
+            </div>
+
+            <div class="step">
+                <div class="step-number">02</div>
+                <h3>Submit Repair Request</h3>
+                <p>
+                    Enter the service details and
+                    describe the repair requirement.
+                </p>
+            </div>
+
+            <div class="step">
+                <div class="step-number">03</div>
+                <h3>Track Repair Status</h3>
+                <p>
+                    Monitor request progress as
+                    the administrator and technician update it.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ABOUT -->
+
+<section class="section" id="about">
+
+    <div class="container about-grid">
+
+        <div class="about-visual">
+            <div class="about-symbol">🛠️</div>
+        </div>
+
+        <div class="about-content">
+
+            <span class="section-label">ABOUT SMARTFIX</span>
+
+            <h2>
+                A Smarter Way to Manage Repair Services
+            </h2>
 
             <p>
-                SmartFix Management System is a web-based application
-                designed to simplify the management of repair services.
-                It connects customers, administrators and technicians
-                through a single platform.
+                SmartFix Management System is a web-based
+                application designed to simplify repair
+                service management.
             </p>
-
-            <br>
 
             <p>
-                Customers can submit repair requests and track their
-                progress. Administrators can manage customers,
-                technicians and repair requests, while technicians
-                can view assigned requests and update their status.
+                It brings customers, administrators and
+                technicians together through a centralized
+                platform for managing repair requests.
             </p>
 
-        </div>
+            <ul class="about-points">
+                <li>Simple customer registration</li>
+                <li>Organized repair request management</li>
+                <li>Technician assignment system</li>
+                <li>Repair progress tracking</li>
+            </ul>
 
-    </section>
-
-    <!-- SERVICES -->
-    <section class="section" id="services">
-
-        <h2>Our Services</h2>
-
-        <p class="section-intro">
-            Smart solutions for efficient repair management.
-        </p>
-
-        <div class="service-list">
-
-            <div class="service">
-
-                <h3>🔧 Repair Request</h3>
-
-                <p>
-                    Submit your repair requirements using a simple
-                    online request form.
-                </p>
-
-            </div>
-
-            <div class="service">
-
-                <h3>👨‍🔧 Technician Assignment</h3>
-
-                <p>
-                    Admin can assign repair requests to available
-                    technicians.
-                </p>
-
-            </div>
-
-            <div class="service">
-
-                <h3>📍 Repair Tracking</h3>
-
-                <p>
-                    Customers can monitor their repair status from
-                    Pending to Completed.
-                </p>
-
-            </div>
-
-            <div class="service">
-
-                <h3>📋 Service Management</h3>
-
-                <p>
-                    Manage customers, technicians and repair requests
-                    from a centralized dashboard.
-                </p>
-
-            </div>
+            <a href="/about" class="btn btn-primary">
+                Learn More →
+            </a>
 
         </div>
 
-    </section>
+    </div>
 
-    <!-- PORTALS -->
-    <section class="section portal">
+</section>
 
-        <h2>SmartFix Portals</h2>
+<!-- SERVICES -->
 
-        <p class="section-intro">
-            Dedicated access for every type of user.
-        </p>
+<section class="section section-light" id="services">
 
-        <div class="cards">
+    <div class="container">
 
-            <div class="card">
+        <div class="section-heading">
+            <span class="section-label">OUR SERVICES</span>
+            <h2>Smart Tools for Repair Management</h2>
+            <p>
+                Features designed to make repair service
+                management easier and more organized.
+            </p>
+        </div>
 
-                <div class="icon">👤</div>
+        <div class="services-grid">
 
-                <h3>Customer</h3>
+            <div class="service-card">
+                <div class="feature-icon">🔧</div>
+                <div>
+                    <h3>Repair Requests</h3>
+                    <p>
+                        Customers can submit service requests
+                        with details about their repair needs.
+                    </p>
+                </div>
+            </div>
 
+            <div class="service-card">
+                <div class="feature-icon">👨‍🔧</div>
+                <div>
+                    <h3>Technician Assignment</h3>
+                    <p>
+                        Administrators can assign technicians
+                        to repair requests.
+                    </p>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <div class="feature-icon">📍</div>
+                <div>
+                    <h3>Repair Status Tracking</h3>
+                    <p>
+                        Customers can check whether a request
+                        is Pending, Assigned, In Progress or Completed.
+                    </p>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <div class="feature-icon">📋</div>
+                <div>
+                    <h3>Centralized Management</h3>
+                    <p>
+                        Manage customer accounts, technicians
+                        and repair requests from one dashboard.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- PORTALS -->
+
+<section class="section">
+
+    <div class="container">
+
+        <div class="section-heading">
+            <span class="section-label">USER PORTALS</span>
+            <h2>Dedicated Access for Every User</h2>
+            <p>
+                SmartFix provides separate interfaces
+                for customers, technicians and administrators.
+            </p>
+        </div>
+
+        <div class="portal-grid">
+
+            <div class="portal-card">
+                <div class="feature-icon">👤</div>
+                <h3>Customer Portal</h3>
                 <p>
-                    Register, submit repair requests and track
-                    service status.
+                    Register, submit repair requests
+                    and track your service status.
                 </p>
-
-                <br>
-
-                <a href="/login">
+                <a href="/login" class="portal-link">
                     Customer Login →
                 </a>
-
             </div>
 
-            <div class="card">
-
-                <div class="icon">👨‍🔧</div>
-
-                <h3>Technician</h3>
-
+            <div class="portal-card">
+                <div class="feature-icon">👨‍🔧</div>
+                <h3>Technician Portal</h3>
                 <p>
-                    Login and manage assigned repair requests.
+                    View assigned repair requests
+                    and update their progress.
                 </p>
-
-                <br>
-
-                <a href="/technician-login">
+                <a href="/technician-login" class="portal-link">
                     Technician Login →
                 </a>
-
             </div>
 
-            <div class="card">
-
-                <div class="icon">🛠️</div>
-
-                <h3>Administrator</h3>
-
+            <div class="portal-card">
+                <div class="feature-icon">🛡️</div>
+                <h3>Admin Portal</h3>
                 <p>
-                    Manage customers, technicians and repair requests.
+                    Manage customers, technicians,
+                    repair requests and assignments.
                 </p>
-
-                <br>
-
-                <a href="/admin-login">
+                <a href="/admin-login" class="portal-link">
                     Admin Login →
                 </a>
-
             </div>
 
         </div>
 
-    </section>
+    </div>
 
-    <!-- CONTACT -->
-    <section class="section contact" id="contact">
+</section>
 
-        <h2>Contact Us</h2>
+<!-- CALL TO ACTION -->
 
-        <p class="section-intro">
-            Have a question or need help with a repair request?
-        </p>
+<section class="section section-light">
 
-        <div class="contact-box">
+    <div class="container">
 
-            <p>📞 <strong>Phone:</strong> 9241614651</p>
+        <div class="cta">
+
+            <h2>Ready to Get Started?</h2>
 
             <p>
-                📧 <strong>Email:</strong>
-                gpbhojpur@gmail.com
+                Create your SmartFix account and
+                manage repair requests from one place.
             </p>
 
-            <p>📍 <strong>Location:</strong> Bihar, India</p>
-
-            <p>🕐 <strong>Support:</strong> Monday – Saturday</p>
+            <a href="/register" class="btn btn-primary">
+                Create Your Account →
+            </a>
 
         </div>
 
-    </section>
+    </div>
 
-    <!-- FOOTER -->
-    <footer>
+</section>
 
-        <p>
-            © 2026 SmartFix Management System
-        </p>
+<!-- CONTACT -->
 
-        <p>
-            Developed by Nitish Sarkar
-        </p>
+<section class="section" id="contact">
 
-    </footer>
+    <div class="container">
+
+        <div class="section-heading">
+            <span class="section-label">GET IN TOUCH</span>
+            <h2>Contact SmartFix</h2>
+            <p>
+                Have a question about the platform?
+                Get in touch using the details below.
+            </p>
+        </div>
+
+        <div class="contact-grid">
+
+            <div class="contact-card">
+                <div class="feature-icon">📞</div>
+                <h3>Phone</h3>
+                <a href="tel:+919241614651">
+                    +91 9241614651
+                </a>
+            </div>
+
+            <div class="contact-card">
+                <div class="feature-icon">✉️</div>
+                <h3>Email</h3>
+                <a href="mailto:gpbhojpur@gmail.com">
+                    gpbhojpur@gmail.com
+                </a>
+            </div>
+
+            <div class="contact-card">
+                <div class="feature-icon">📍</div>
+                <h3>Location</h3>
+                <p>Bihar, India</p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- FOOTER -->
+
+<footer>
+
+    <div class="container">
+
+        <div class="footer-grid">
+
+            <div>
+                <div class="footer-logo">
+                    🔧 Smart<span>Fix</span>
+                </div>
+
+                <p>
+                    A web-based repair management platform
+                    connecting customers, technicians
+                    and administrators.
+                </p>
+            </div>
+
+            <div>
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about">About Us</a></li>
+                    <li><a href="/services">Services</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4>Account Access</h4>
+                <ul>
+                    <li><a href="/login">Customer Login</a></li>
+                    <li><a href="/register">Register</a></li>
+                    <li><a href="/technician-login">Technician</a></li>
+                    <li><a href="/admin-login">Administrator</a></li>
+                </ul>
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+            © 2026 SmartFix Management System.
+            Developed by Nitish Sarkar.
+        </div>
+
+    </div>
+
+</footer>
+
+<script>
+const menuToggle = document.getElementById("menuToggle");
+const navbar = document.getElementById("navbar");
+
+menuToggle.addEventListener("click", function () {
+    const isOpen = navbar.classList.toggle("open");
+    menuToggle.setAttribute("aria-expanded", String(isOpen));
+    menuToggle.textContent = isOpen ? "✕" : "☰";
+});
+
+document.querySelectorAll(".nav-links a").forEach(function (link) {
+    link.addEventListener("click", function () {
+        navbar.classList.remove("open");
+        menuToggle.setAttribute("aria-expanded", "false");
+        menuToggle.textContent = "☰";
+    });
+});
+</script>
 
 </body>
 </html>
-
-
