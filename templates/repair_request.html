@@ -5,123 +5,694 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Repair Request - SmartFix</title>
+    <title>Request a Repair | SmartFix</title>
+
+    <meta name="description"
+          content="Submit a repair request through SmartFix and track its progress from your customer dashboard.">
 
     <style>
+        :root {
+            --dark: #102820;
+            --dark2: #204d3d;
+            --green: #20b486;
+            --green2: #168b68;
+            --light: #f5f8f6;
+            --text: #24352e;
+            --muted: #718078;
+            --border: #e1eae4;
+        }
+
         * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
-            font-family: Arial, sans-serif;
         }
 
         body {
-            margin: 0;
-            background: #f4f7fb;
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--light);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        a {
+            text-decoration: none;
         }
 
         .container {
-            width: 500px;
-            margin: 50px auto;
-            background: white;
-            padding: 35px;
-            border-radius: 10px;
-            box-shadow: 0 3px 15px #ddd;
+            width: 90%;
+            max-width: 1180px;
+            margin: auto;
         }
 
-        h1 {
-            text-align: center;
-            color: #1e3a8a;
+        /* NAVBAR */
+
+        .navbar {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            min-height: 78px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            font-size: 25px;
+            font-weight: 800;
+            color: var(--dark);
+        }
+
+        .logo-icon {
+            width: 43px;
+            height: 43px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--dark);
+            color: white;
+            border-radius: 12px;
+            font-size: 24px;
+        }
+
+        .logo span {
+            color: var(--green2);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .nav-links a {
+            color: #42564a;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .nav-links a:hover {
+            color: var(--green2);
+        }
+
+        .back-btn {
+            background: #e7f6ee;
+            color: var(--green2) !important;
+            padding: 11px 17px;
+            border-radius: 9px;
+        }
+
+        .back-btn:hover {
+            background: #d7efdf;
+        }
+
+        /* PAGE HEADER */
+
+        .page-header {
+            padding: 48px 0 35px;
+        }
+
+        .page-label {
+            display: inline-block;
+            color: var(--green2);
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1.3px;
+            margin-bottom: 12px;
+        }
+
+        .page-header h1 {
+            font-size: clamp(30px, 4vw, 42px);
+            color: var(--dark);
+            margin-bottom: 14px;
+            letter-spacing: -0.8px;
+        }
+
+        .page-header p {
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1.8;
+            max-width: 650px;
+        }
+
+        /* MAIN GRID */
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 0.8fr;
+            gap: 30px;
+            align-items: start;
+            padding-bottom: 75px;
+        }
+
+        /* FORM CARD */
+
+        .form-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 38px;
+            box-shadow: 0 12px 35px rgba(16,40,32,0.04);
+        }
+
+        .form-heading {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .form-heading-icon {
+            width: 55px;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e7f7ef;
+            border-radius: 14px;
+            font-size: 27px;
+            flex-shrink: 0;
+        }
+
+        .form-heading h2 {
+            color: var(--dark);
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .form-heading p {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .form-group {
             margin-bottom: 25px;
         }
 
         label {
             display: block;
-            margin-top: 15px;
-            margin-bottom: 5px;
+            color: #34473e;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .required {
+            color: #d34a4a;
         }
 
         input,
         select,
         textarea {
             width: 100%;
-            padding: 11px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            padding: 15px 16px;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 15px;
+            color: var(--text);
+            outline: none;
+            transition: 0.25s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--green);
+            box-shadow: 0 0 0 4px rgba(32,180,134,0.1);
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #a0aca5;
         }
 
         textarea {
-            height: 90px;
-            resize: none;
+            resize: vertical;
+            min-height: 115px;
+            line-height: 1.7;
         }
 
-        button {
+        .field-hint {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .submit-btn {
             width: 100%;
-            margin-top: 25px;
-            padding: 12px;
+            padding: 17px;
             border: none;
-            border-radius: 5px;
-            background: #1e3a8a;
+            border-radius: 10px;
+            background: var(--green);
             color: white;
             font-size: 16px;
+            font-weight: 800;
             cursor: pointer;
+            transition: 0.25s;
+            margin-top: 5px;
         }
 
-        .back {
-            display: block;
+        .submit-btn:hover {
+            background: var(--green2);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 22px rgba(32,180,134,0.18);
+        }
+
+        .form-footer {
             text-align: center;
-            margin-top: 20px;
-            color: #1e3a8a;
-            text-decoration: none;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid var(--border);
+        }
+
+        .form-footer a {
+            color: var(--green2);
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .info-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+        }
+
+        .info-card h3 {
+            color: var(--dark);
+            font-size: 20px;
+            margin-bottom: 22px;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 25px;
+        }
+
+        .step:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-number {
+            width: 34px;
+            height: 34px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background: #e7f7ef;
+            color: var(--green2);
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .step h4 {
+            font-size: 14px;
+            color: var(--dark);
+            margin-bottom: 6px;
+        }
+
+        .step p {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        /* STATUS INFO */
+
+        .status-card {
+            background: linear-gradient(135deg, #102820, #204d3d);
+            color: white;
+            border-radius: 16px;
+            padding: 30px;
+        }
+
+        .status-card h3 {
+            font-size: 20px;
+            margin-bottom: 14px;
+        }
+
+        .status-card p {
+            color: #c6dacd;
+            font-size: 14px;
+            line-height: 1.8;
+            margin-bottom: 22px;
+        }
+
+        .status-link {
+            display: inline-block;
+            background: var(--green);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .status-link:hover {
+            background: var(--green2);
+        }
+
+        /* FOOTER */
+
+        footer {
+            background: var(--dark);
+            color: #afc8b9;
+            text-align: center;
+            padding: 25px 15px;
+            font-size: 13px;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 950px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 650px) {
+            .nav-container {
+                padding: 15px 0;
+                flex-wrap: wrap;
+            }
+
+            .logo {
+                font-size: 22px;
+            }
+
+            .nav-links {
+                width: 100%;
+                justify-content: space-between;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+
+            .nav-links a {
+                font-size: 12px;
+            }
+
+            .page-header {
+                padding: 35px 0 25px;
+            }
+
+            .form-card {
+                padding: 25px 20px;
+            }
+
+            .form-heading h2 {
+                font-size: 19px;
+            }
+
+            .sidebar {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 
 <body>
 
-    <div class="container">
+    <!-- NAVBAR -->
 
-        <h1>🔧 Repair Request</h1>
+    <nav class="navbar">
+        <div class="container nav-container">
 
-        <form method="POST">
+            <a href="/" class="logo">
+                <div class="logo-icon">🔧</div>
+                <div>Smart<span>Fix</span></div>
+            </a>
 
-            <label>Mobile Number</label>
-            <input type="tel" name="mobile" required>
+            <div class="nav-links">
+                <a href="/dashboard">Dashboard</a>
+                <a href="/my-requests">My Requests</a>
+                <a href="/dashboard" class="back-btn">
+                    ← Back to Dashboard
+                </a>
+            </div>
 
-            <label>Service Type</label>
+        </div>
+    </nav>
 
-            <select name="service_type" required>
-                <option value="">Select Service</option>
-                <option value="Mobile Repair">Mobile Repair</option>
-                <option value="Laptop Repair">Laptop Repair</option>
-                <option value="Computer Repair">Computer Repair</option>
-                <option value="Other">Other</option>
-            </select>
+    <!-- PAGE HEADER -->
 
-            <label>Problem Description</label>
+    <header class="page-header">
+        <div class="container">
 
-            <textarea
-                name="description"
-                placeholder="Describe your problem..."
-                required></textarea>
+            <span class="page-label">
+                CUSTOMER SERVICE PORTAL
+            </span>
 
-            <label>Address</label>
+            <h1>🔧 Request a Repair</h1>
 
-            <textarea
-                name="address"
-                placeholder="Enter your address..."
-                required></textarea>
+            <p>
+                Tell us about your repair requirement.
+                Fill in the form below to submit your request
+                and track its progress from your dashboard.
+            </p>
 
-            <button type="submit">
-                Submit Repair Request
-            </button>
+        </div>
+    </header>
 
-        </form>
+    <!-- MAIN CONTENT -->
 
-        <a class="back" href="/dashboard">
-            ← Back to Dashboard
-        </a>
+    <main class="container main-grid">
 
-    </div>
+        <!-- REPAIR FORM -->
+
+        <section class="form-card">
+
+            <div class="form-heading">
+                <div class="form-heading-icon">📝</div>
+
+                <div>
+                    <h2>Repair Request Details</h2>
+                    <p>Complete the information below.</p>
+                </div>
+            </div>
+
+            <form method="POST">
+
+                <!-- MOBILE -->
+
+                <div class="form-group">
+
+                    <label for="mobile">
+                        Mobile Number <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="mobile"
+                        name="mobile"
+                        placeholder="Enter your 10-digit mobile number"
+                        autocomplete="tel"
+                        inputmode="numeric"
+                        pattern="[0-9]{10}"
+                        minlength="10"
+                        maxlength="10"
+                        title="Please enter a 10-digit mobile number"
+                        required
+                    >
+
+                    <small class="field-hint">
+                        Enter your mobile number without +91.
+                    </small>
+
+                </div>
+
+                <!-- SERVICE TYPE -->
+
+                <div class="form-group">
+
+                    <label for="service_type">
+                        Service Type <span class="required">*</span>
+                    </label>
+
+                    <select
+                        id="service_type"
+                        name="service_type"
+                        required
+                    >
+                        <option value="">Select a service</option>
+                        <option value="Mobile Repair">📱 Mobile Repair</option>
+                        <option value="Laptop Repair">💻 Laptop Repair</option>
+                        <option value="Computer Repair">🖥️ Computer Repair</option>
+                        <option value="Other">🔧 Other</option>
+                    </select>
+
+                </div>
+
+                <!-- PROBLEM DESCRIPTION -->
+
+                <div class="form-group">
+
+                    <label for="description">
+                        Problem Description <span class="required">*</span>
+                    </label>
+
+                    <textarea
+                        id="description"
+                        name="description"
+                        placeholder="Describe the issue you are facing with your device..."
+                        minlength="10"
+                        maxlength="2000"
+                        required
+                    ></textarea>
+
+                    <small class="field-hint">
+                        Please describe the problem clearly.
+                    </small>
+
+                </div>
+
+                <!-- ADDRESS -->
+
+                <div class="form-group">
+
+                    <label for="address">
+                        Service Address <span class="required">*</span>
+                    </label>
+
+                    <textarea
+                        id="address"
+                        name="address"
+                        placeholder="Enter your complete address..."
+                        maxlength="500"
+                        required
+                    ></textarea>
+
+                    <small class="field-hint">
+                        Enter the address associated with your request.
+                    </small>
+
+                </div>
+
+                <!-- SUBMIT -->
+
+                <button type="submit" class="submit-btn">
+                    Submit Repair Request →
+                </button>
+
+            </form>
+
+            <div class="form-footer">
+                <a href="/dashboard">
+                    ← Back to Customer Dashboard
+                </a>
+            </div>
+
+        </section>
+
+        <!-- RIGHT SIDEBAR -->
+
+        <aside class="sidebar">
+
+            <div class="info-card">
+
+                <h3>📋 How It Works</h3>
+
+                <div class="step">
+                    <div class="step-number">01</div>
+                    <div>
+                        <h4>Submit Your Request</h4>
+                        <p>
+                            Fill in your device and problem details.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">02</div>
+                    <div>
+                        <h4>Admin Review</h4>
+                        <p>
+                            Your request is reviewed by the administrator.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">03</div>
+                    <div>
+                        <h4>Technician Assignment</h4>
+                        <p>
+                            A technician can be assigned to your request.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">04</div>
+                    <div>
+                        <h4>Track Progress</h4>
+                        <p>
+                            View your repair status in My Requests.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="status-card">
+
+                <h3>📊 Track Your Repairs</h3>
+
+                <p>
+                    Already submitted a repair request?
+                    Check its current status and technician
+                    assignment from your SmartFix account.
+                </p>
+
+                <a href="/my-requests" class="status-link">
+                    View My Requests →
+                </a>
+
+            </div>
+
+        </aside>
+
+    </main>
+
+    <!-- FOOTER -->
+
+    <footer>
+        © 2026 SmartFix Management System · Repair Request Portal
+    </footer>
 
 </body>
-
 </html>
