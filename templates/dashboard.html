@@ -1,408 +1,693 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>Customer Dashboard - SmartFix</title>
+    <title>Customer Dashboard | SmartFix</title>
 
     <style>
+        :root {
+            --dark: #102820;
+            --dark2: #204d3d;
+            --green: #20b486;
+            --green2: #168b68;
+            --light: #f5f8f6;
+            --text: #24352e;
+            --muted: #718078;
+            --border: #e1eae4;
+        }
 
         * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
-            font-family: Arial, sans-serif;
         }
 
         body {
-            margin: 0;
-            background: #f4f7fb;
-            color: #222;
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--light);
+            color: var(--text);
+            min-height: 100vh;
         }
 
-        /* =========================
-           NAVBAR
-        ========================== */
-
-        nav {
-            background: #1e3a8a;
-
-            color: white;
-
-            padding: 18px 50px;
-
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .logout {
-            background: #dc2626;
-
-            color: white;
-
+        a {
             text-decoration: none;
-
-            padding: 9px 16px;
-
-            border-radius: 5px;
-
-            font-weight: bold;
         }
-
-        .logout:hover {
-            background: #b91c1c;
-        }
-
-
-        /* =========================
-           MAIN
-        ========================== */
 
         .container {
             width: 90%;
-
-            max-width: 1100px;
-
-            margin: 40px auto;
+            max-width: 1180px;
+            margin: auto;
         }
 
+        /* NAVBAR */
 
-        .welcome {
+        .navbar {
             background: white;
-
-            padding: 30px;
-
-            border-radius: 10px;
-
-            box-shadow: 0 3px 12px rgba(0,0,0,0.1);
-
-            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        .welcome h1 {
-            margin-top: 0;
-
-            color: #1e3a8a;
+        .nav-container {
+            min-height: 78px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
         }
 
-        .welcome p {
-            color: #666;
-
-            line-height: 1.6;
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            font-size: 25px;
+            font-weight: 800;
+            color: var(--dark);
         }
 
+        .logo-icon {
+            width: 43px;
+            height: 43px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--dark);
+            color: white;
+            border-radius: 12px;
+            font-size: 24px;
+        }
 
-        /* =========================
-           ACTION CARDS
-        ========================== */
+        .logo span {
+            color: var(--green2);
+        }
 
-        .cards {
-            display: grid;
-
-            grid-template-columns: repeat(2, 1fr);
-
+        .nav-links {
+            display: flex;
+            align-items: center;
             gap: 25px;
-
-            margin-bottom: 30px;
         }
 
-        .card {
-            background: white;
-
-            padding: 35px;
-
-            border-radius: 10px;
-
-            text-align: center;
-
-            box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+        .nav-links a {
+            color: #42564a;
+            font-size: 14px;
+            font-weight: 700;
         }
 
-        .icon {
-            font-size: 45px;
+        .nav-links a:hover {
+            color: var(--green2);
+        }
 
+        .logout-btn {
+            background: #fff0f0;
+            color: #c33b3b !important;
+            padding: 11px 17px;
+            border-radius: 9px;
+        }
+
+        .logout-btn:hover {
+            background: #ffe1e1;
+        }
+
+        /* MAIN */
+
+        main {
+            padding: 38px 0 70px;
+        }
+
+        /* WELCOME */
+
+        .welcome-card {
+            background: linear-gradient(135deg, #102820, #204d3d);
+            color: white;
+            padding: 45px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 30px;
+            margin-bottom: 35px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .welcome-card::after {
+            content: "";
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 50%;
+            right: -90px;
+            bottom: -150px;
+            pointer-events: none;
+        }
+
+        .welcome-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .welcome-badge {
+            display: inline-block;
+            color: #a6f2d5;
+            background: rgba(32,180,134,0.15);
+            padding: 8px 13px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 19px;
+        }
+
+        .welcome-card h1 {
+            font-size: clamp(27px, 4vw, 38px);
             margin-bottom: 15px;
+            line-height: 1.3;
         }
 
-        .card h2 {
-            color: #1e3a8a;
+        .welcome-card h1 span {
+            color: #55ddb0;
+        }
 
+        .welcome-card p {
+            max-width: 590px;
+            color: #c5dacf;
+            font-size: 15px;
+            line-height: 1.8;
+            margin-bottom: 25px;
+        }
+
+        .welcome-icon {
+            font-size: 100px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* BUTTONS */
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 13px 22px;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 800;
+            transition: 0.25s;
+        }
+
+        .btn-primary {
+            background: var(--green);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--green2);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: white;
+            color: var(--dark);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline:hover {
+            background: #eaf5ee;
+        }
+
+        /* SECTION HEADER */
+
+        .section-header {
+            margin-bottom: 23px;
+        }
+
+        .section-label {
+            color: var(--green2);
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1.3px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .section-header h2 {
+            color: var(--dark);
+            font-size: 26px;
+            margin-bottom: 8px;
+        }
+
+        .section-header p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        /* ACTION CARDS */
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-bottom: 45px;
+        }
+
+        .action-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            transition: 0.3s;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(16,40,32,0.08);
+            border-color: #b6dfca;
+        }
+
+        .action-icon {
+            width: 65px;
+            height: 65px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #e6f7ee;
+            border-radius: 15px;
+            font-size: 30px;
+            margin-bottom: 23px;
+        }
+
+        .action-card h3 {
+            color: var(--dark);
+            font-size: 21px;
+            margin-bottom: 13px;
+        }
+
+        .action-card p {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.8;
+            margin-bottom: 25px;
+        }
+
+        /* STATUS GUIDE */
+
+        .status-section {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 35px;
+        }
+
+        .status-section h2 {
+            color: var(--dark);
+            font-size: 23px;
             margin-bottom: 10px;
         }
 
-        .card p {
-            color: #666;
+        .status-section > p {
+            color: var(--muted);
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
 
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .status-card {
+            padding: 20px 15px;
+            background: #f8faf9;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .status-icon {
+            font-size: 28px;
+            margin-bottom: 12px;
+        }
+
+        .status-card h3 {
+            font-size: 14px;
+            margin-bottom: 7px;
+        }
+
+        .status-card p {
+            color: var(--muted);
+            font-size: 12px;
             line-height: 1.5;
-
-            margin-bottom: 20px;
         }
 
-        .button {
-            display: inline-block;
+        /* HOW IT WORKS */
 
-            padding: 11px 22px;
-
-            background: #1e3a8a;
-
-            color: white;
-
-            text-decoration: none;
-
-            border-radius: 5px;
-
-            font-weight: bold;
+        .info-section {
+            background: #e8f5ed;
+            border: 1px solid #d1e8d9;
+            border-radius: 16px;
+            padding: 32px;
         }
 
-        .button:hover {
-            background: #162d6b;
+        .info-section h2 {
+            color: var(--dark);
+            font-size: 23px;
+            margin-bottom: 25px;
         }
 
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
 
-        /* =========================
-           INFORMATION
-        ========================== */
+        .step {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
 
-        .info {
-            background: #eef2ff;
-
-            padding: 25px;
-
+        .step-number {
+            width: 34px;
+            height: 34px;
+            flex-shrink: 0;
             border-radius: 10px;
-
-            margin-top: 20px;
+            background: var(--dark);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 800;
         }
 
-        .info h2 {
-            color: #1e3a8a;
-
-            margin-top: 0;
+        .step h3 {
+            font-size: 14px;
+            color: var(--dark);
+            margin-bottom: 6px;
         }
 
-        .info ul {
-            line-height: 2;
-
-            color: #555;
+        .step p {
+            font-size: 12px;
+            color: #60776a;
+            line-height: 1.6;
         }
 
-
-        /* =========================
-           FOOTER
-        ========================== */
+        /* FOOTER */
 
         footer {
-            margin-top: 50px;
-
-            background: #222;
-
-            color: white;
-
+            background: #102820;
+            color: #afc8b9;
             text-align: center;
-
-            padding: 20px;
+            padding: 25px 15px;
+            font-size: 13px;
         }
 
+        /* RESPONSIVE */
 
-        /* =========================
-           RESPONSIVE
-        ========================== */
-
-        @media (max-width: 700px) {
-
-            nav {
-                padding: 15px 20px;
+        @media (max-width: 900px) {
+            .status-grid,
+            .steps {
+                grid-template-columns: repeat(2, 1fr);
             }
 
-            .cards {
+            .welcome-icon {
+                font-size: 75px;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .nav-container {
+                flex-wrap: wrap;
+                padding: 15px 0;
+            }
+
+            .logo {
+                font-size: 22px;
+            }
+
+            .nav-links {
+                width: 100%;
+                justify-content: space-between;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+
+            .nav-links a {
+                font-size: 12px;
+            }
+
+            .welcome-card {
+                padding: 30px 24px;
+            }
+
+            .welcome-icon {
+                display: none;
+            }
+
+            .action-grid,
+            .status-grid,
+            .steps {
                 grid-template-columns: 1fr;
             }
 
-            .container {
-                width: 92%;
+            .action-card,
+            .status-section,
+            .info-section {
+                padding: 25px;
             }
 
+            .section-header h2 {
+                font-size: 23px;
+            }
         }
-
     </style>
-
 </head>
-
 
 <body>
 
+    <!-- NAVBAR -->
 
-    <!-- =========================
-         NAVBAR
-    ========================== -->
+    <nav class="navbar">
+        <div class="container nav-container">
 
-    <nav>
+            <a href="/" class="logo">
+                <div class="logo-icon">🔧</div>
+                <div>Smart<span>Fix</span></div>
+            </a>
 
-        <div class="logo">
-            🔧 SmartFix
+            <div class="nav-links">
+                <a href="/dashboard">Dashboard</a>
+                <a href="/repair-request">New Repair</a>
+                <a href="/my-requests">My Requests</a>
+                <a href="/logout" class="logout-btn">Logout</a>
+            </div>
+
         </div>
-
-        <a href="/logout"
-           class="logout">
-
-            Logout
-
-        </a>
-
     </nav>
 
+    <!-- MAIN CONTENT -->
 
-    <!-- =========================
-         MAIN CONTENT
-    ========================== -->
+    <main>
+        <div class="container">
 
-    <div class="container">
+            <!-- WELCOME -->
 
+            <section class="welcome-card">
 
-        <!-- WELCOME -->
+                <div class="welcome-content">
 
-        <div class="welcome">
+                    <span class="welcome-badge">
+                        ✦ CUSTOMER DASHBOARD
+                    </span>
 
-            <h1>
-                Welcome, {{ name }} 👋
-            </h1>
+                    <h1>
+                        Welcome back, <span>{{ name }}</span> 👋
+                    </h1>
 
-            <p>
+                    <p>
+                        Manage your repair requests, check service
+                        progress and stay organized — all from
+                        your personal SmartFix dashboard.
+                    </p>
 
-                Welcome to your SmartFix Customer Dashboard.
-                From here you can submit a repair request
-                and track the progress of your existing requests.
+                    <a href="/repair-request" class="btn btn-primary">
+                        + New Repair Request
+                    </a>
 
-            </p>
-
-        </div>
-
-
-        <!-- ACTION CARDS -->
-
-        <div class="cards">
-
-
-            <!-- REQUEST REPAIR -->
-
-            <div class="card">
-
-                <div class="icon">
-                    🔧
                 </div>
 
-                <h2>
-                    Request a Repair
-                </h2>
-
-                <p>
-
-                    Submit a new repair request by
-                    providing your service and problem details.
-
-                </p>
-
-                <a href="/repair-request"
-                   class="button">
-
-                    Request Repair
-
-                </a>
-
-            </div>
-
-
-            <!-- MY REQUESTS -->
-
-            <div class="card">
-
-                <div class="icon">
-                    📋
+                <div class="welcome-icon" aria-hidden="true">
+                    🛠️
                 </div>
 
-                <h2>
-                    My Requests
-                </h2>
+            </section>
 
+            <!-- QUICK ACTIONS -->
+
+            <div class="section-header">
+                <span class="section-label">QUICK ACTIONS</span>
+                <h2>What Would You Like to Do?</h2>
                 <p>
-
-                    View your submitted repair requests,
-                    technician assignment and current status.
-
+                    Access your most important SmartFix features.
                 </p>
-
-                <a href="/my-requests"
-                   class="button">
-
-                    View Requests
-
-                </a>
-
             </div>
 
+            <section class="action-grid">
+
+                <div class="action-card">
+
+                    <div class="action-icon">🔧</div>
+
+                    <h3>Request a Repair</h3>
+
+                    <p>
+                        Submit a new repair request by providing
+                        your service details and describing
+                        the problem you are facing.
+                    </p>
+
+                    <a href="/repair-request" class="btn btn-primary">
+                        Request Repair →
+                    </a>
+
+                </div>
+
+                <div class="action-card">
+
+                    <div class="action-icon">📋</div>
+
+                    <h3>My Repair Requests</h3>
+
+                    <p>
+                        View your submitted repair requests,
+                        technician assignments and
+                        their current progress.
+                    </p>
+
+                    <a href="/my-requests" class="btn btn-outline">
+                        View My Requests →
+                    </a>
+
+                </div>
+
+            </section>
+
+            <!-- STATUS GUIDE -->
+
+            <section class="status-section">
+
+                <h2>📊 Repair Status Guide</h2>
+
+                <p>
+                    Understand what each repair request status means.
+                    To see your actual request status, open My Requests.
+                </p>
+
+                <div class="status-grid">
+
+                    <div class="status-card">
+                        <div class="status-icon">🕒</div>
+                        <h3>Pending</h3>
+                        <p>
+                            Your repair request has been submitted.
+                        </p>
+                    </div>
+
+                    <div class="status-card">
+                        <div class="status-icon">👨‍🔧</div>
+                        <h3>Assigned</h3>
+                        <p>
+                            A technician has been assigned.
+                        </p>
+                    </div>
+
+                    <div class="status-card">
+                        <div class="status-icon">⚙️</div>
+                        <h3>In Progress</h3>
+                        <p>
+                            Work on the repair is underway.
+                        </p>
+                    </div>
+
+                    <div class="status-card">
+                        <div class="status-icon">✅</div>
+                        <h3>Completed</h3>
+                        <p>
+                            The repair has been marked complete.
+                        </p>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- HOW IT WORKS -->
+
+            <section class="info-section">
+
+                <h2>💡 How SmartFix Works</h2>
+
+                <div class="steps">
+
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div>
+                            <h3>Submit Request</h3>
+                            <p>
+                                Enter your repair details.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div>
+                            <h3>Admin Review</h3>
+                            <p>
+                                Admin reviews your request.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div>
+                            <h3>Technician Assigned</h3>
+                            <p>
+                                A technician manages the repair.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div>
+                            <h3>Track Progress</h3>
+                            <p>
+                                Check updates in My Requests.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </section>
 
         </div>
+    </main>
 
-
-        <!-- INFORMATION -->
-
-        <div class="info">
-
-            <h2>
-                📌 How SmartFix Works
-            </h2>
-
-            <ul>
-
-                <li>
-                    Submit your repair request.
-                </li>
-
-                <li>
-                    Admin reviews and assigns a technician.
-                </li>
-
-                <li>
-                    Technician works on your repair.
-                </li>
-
-                <li>
-                    Track your repair status from My Requests.
-                </li>
-
-            </ul>
-
-        </div>
-
-
-    </div>
-
-
-    <!-- =========================
-         FOOTER
-    ========================== -->
+    <!-- FOOTER -->
 
     <footer>
-
-        <p>
-            © 2026 SmartFix Management System
-        </p>
-
+        © 2026 SmartFix Management System · Customer Dashboard
     </footer>
 
-
 </body>
-
 </html>
-
