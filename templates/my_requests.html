@@ -1,541 +1,944 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>My Requests - SmartFix</title>
+    <title>My Repair Requests | SmartFix</title>
 
     <style>
+        :root {
+            --dark: #102820;
+            --dark2: #204d3d;
+            --green: #20b486;
+            --green2: #168b68;
+            --light: #f5f8f6;
+            --text: #24352e;
+            --muted: #718078;
+            --border: #e1eae4;
+        }
 
         * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
-            font-family: Arial, sans-serif;
         }
 
         body {
-            margin: 0;
-            background: #f4f7fb;
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--light);
+            color: var(--text);
+            min-height: 100vh;
         }
 
-        nav {
-            background: #1e3a8a;
-            padding: 18px 50px;
-            color: white;
-
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        a {
+            text-decoration: none;
         }
 
         .container {
             width: 90%;
-            max-width: 1000px;
-            margin: 40px auto;
+            max-width: 1150px;
+            margin: auto;
         }
 
-        h1 {
-            text-align: center;
-            color: #1e3a8a;
-            margin-bottom: 30px;
-        }
+        /* NAVBAR */
 
-        .request {
+        .navbar {
             background: white;
-            padding: 25px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            min-height: 78px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            font-size: 25px;
+            font-weight: 800;
+            color: var(--dark);
+        }
+
+        .logo-icon {
+            width: 43px;
+            height: 43px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--dark);
+            color: white;
+            border-radius: 12px;
+            font-size: 24px;
+        }
+
+        .logo span {
+            color: var(--green2);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #42564a;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .nav-links a:hover {
+            color: var(--green2);
+        }
+
+        .nav-btn {
+            background: #e7f6ee;
+            color: var(--green2) !important;
+            padding: 11px 16px;
+            border-radius: 9px;
+        }
+
+        /* HEADER */
+
+        .page-header {
+            background: linear-gradient(135deg, #102820, #204d3d);
+            color: white;
+            padding: 50px 0;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            color: #8de7c1;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1.3px;
+            margin-bottom: 14px;
+        }
+
+        .page-header h1 {
+            font-size: clamp(29px, 4vw, 42px);
+            margin-bottom: 14px;
+        }
+
+        .page-header p {
+            color: #c5dacf;
+            font-size: 15px;
+            line-height: 1.8;
+            max-width: 620px;
+        }
+
+        .header-icon {
+            font-size: 80px;
+        }
+
+        /* MAIN */
+
+        main {
+            padding: 42px 0 75px;
+        }
+
+        .section-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
             margin-bottom: 25px;
-            border-radius: 10px;
-
-            box-shadow: 0 3px 12px #ddd;
         }
 
-        .request h2 {
-            color: #1e3a8a;
-            margin-top: 5px;
+        .section-heading h2 {
+            color: var(--dark);
+            font-size: 25px;
+            margin-bottom: 7px;
         }
 
-        .request-id {
-            color: #777;
+        .section-heading p {
+            color: var(--muted);
             font-size: 14px;
         }
 
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 13px 20px;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 800;
+            transition: 0.25s;
+        }
+
+        .btn-primary {
+            background: var(--green);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--green2);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: white;
+            color: var(--dark);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline:hover {
+            background: #eaf5ee;
+        }
+
+        /* REQUEST CARD */
+
+        .request-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            margin-bottom: 28px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(16, 40, 32, 0.04);
+        }
+
+        .request-top {
+            padding: 28px 30px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .request-id {
+            display: inline-block;
+            color: var(--green2);
+            background: #e8f7ef;
+            padding: 7px 12px;
+            border-radius: 7px;
+            font-size: 12px;
+            font-weight: 800;
+            margin-bottom: 13px;
+        }
+
+        .request-top h3 {
+            font-size: 23px;
+            color: var(--dark);
+        }
+
+        /* STATUS BADGES */
+
         .status {
             display: inline-block;
-            padding: 8px 15px;
-            border-radius: 5px;
-            color: white;
-            font-weight: bold;
+            padding: 10px 15px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 800;
+            white-space: nowrap;
         }
 
         .pending {
-            background: #f59e0b;
+            color: #a36500;
+            background: #fff3d6;
         }
 
         .assigned {
-            background: #2563eb;
+            color: #2355a4;
+            background: #e4eeff;
         }
 
         .progress {
-            background: #8b5cf6;
+            color: #7540a8;
+            background: #f1e7ff;
         }
 
         .completed {
-            background: #16a34a;
+            color: #16834c;
+            background: #dcf7e7;
         }
 
-        .technician {
-            background: #f1f5f9;
-            padding: 15px;
-            margin-top: 20px;
-
-            border-left: 5px solid #1e3a8a;
-
-            border-radius: 5px;
+        .unknown {
+            color: #53635a;
+            background: #edf1ee;
         }
 
-        .technician strong {
-            color: #1e3a8a;
+        /* REQUEST DETAILS */
+
+        .request-body {
+            padding: 30px;
         }
 
-        /* ==============================
-           TRACKING TIMELINE
-        ============================== */
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 22px;
+            margin-bottom: 27px;
+        }
+
+        .detail-box {
+            background: #f8faf9;
+            border: 1px solid #edf1ee;
+            border-radius: 11px;
+            padding: 19px;
+            min-width: 0;
+        }
+
+        .detail-label {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .detail-value {
+            color: var(--dark);
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1.7;
+            overflow-wrap: anywhere;
+            white-space: pre-wrap;
+        }
+
+        /* TECHNICIAN */
+
+        .technician-box {
+            background: #eaf7f0;
+            border: 1px solid #d4eadc;
+            border-left: 4px solid var(--green);
+            padding: 22px;
+            border-radius: 11px;
+            margin-bottom: 28px;
+        }
+
+        .technician-box h4 {
+            color: var(--dark);
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .technician-box p {
+            color: #526c5d;
+            font-size: 14px;
+            line-height: 1.7;
+            overflow-wrap: anywhere;
+        }
+
+        .technician-waiting {
+            background: #fffaf0;
+            border-color: #f3e4bf;
+            border-left-color: #e6ad37;
+        }
+
+        /* TRACKING */
 
         .tracking {
-            margin-top: 25px;
-            padding: 20px;
-
-            background: #f8fafc;
-
-            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: #fbfdfb;
+            border-radius: 13px;
+            padding: 28px 20px;
         }
 
-        .tracking h3 {
-            margin-top: 0;
-            color: #1e3a8a;
+        .tracking h4 {
+            color: var(--dark);
+            font-size: 19px;
+            margin-bottom: 8px;
+        }
+
+        .tracking-subtitle {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
         }
 
         .timeline {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             position: relative;
-
-            margin-top: 25px;
+            margin-top: 30px;
         }
 
         .timeline::before {
             content: "";
-
             position: absolute;
-
-            top: 15px;
-            left: 8%;
-            right: 8%;
-
+            top: 18px;
+            left: 12.5%;
+            right: 12.5%;
             height: 4px;
-
-            background: #d1d5db;
-
+            background: #e0e7e1;
             z-index: 0;
         }
 
-        .step {
+        .timeline-step {
             position: relative;
-
             z-index: 1;
+            text-align: center;
+            min-width: 0;
+        }
 
-            width: 22%;
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e0e7e1;
+            color: #819087;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 800;
+            margin: 0 auto 13px;
+            border: 4px solid #fbfdfb;
+            box-sizing: content-box;
+        }
 
+        .timeline-step.done .step-circle {
+            background: var(--green);
+            color: white;
+        }
+
+        .timeline-step.active .step-circle {
+            background: var(--dark);
+            color: white;
+            box-shadow: 0 0 0 4px rgba(32,180,134,0.13);
+        }
+
+        .timeline-step p {
+            font-size: 12px;
+            color: #849087;
+            line-height: 1.6;
+        }
+
+        .timeline-step.done p,
+        .timeline-step.active p {
+            color: var(--dark);
+            font-weight: 800;
+        }
+
+        /* EMPTY STATE */
+
+        .empty-state {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 65px 25px;
             text-align: center;
         }
 
-        .circle {
-            width: 32px;
-            height: 32px;
+        .empty-icon {
+            font-size: 65px;
+            margin-bottom: 22px;
+        }
 
-            margin: auto;
+        .empty-state h3 {
+            font-size: 25px;
+            color: var(--dark);
+            margin-bottom: 12px;
+        }
 
-            border-radius: 50%;
+        .empty-state p {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.8;
+            margin-bottom: 25px;
+        }
 
-            background: #d1d5db;
+        /* BOTTOM ACTIONS */
 
-            color: white;
-
+        .bottom-actions {
             display: flex;
-
-            align-items: center;
-
             justify-content: center;
-
-            font-weight: bold;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 35px;
         }
 
-        .step.active .circle {
-            background: #1e3a8a;
-        }
+        /* FOOTER */
 
-        .step.completed .circle {
-            background: #16a34a;
-        }
-
-        .step p {
+        footer {
+            background: var(--dark);
+            color: #afc8b9;
+            text-align: center;
+            padding: 25px 15px;
             font-size: 13px;
-            margin-top: 10px;
-            color: #555;
         }
 
-        .step.completed p,
-        .step.active p {
-            font-weight: bold;
-            color: #1e3a8a;
-        }
+        /* RESPONSIVE */
 
-        .back {
-            display: block;
-
-            width: fit-content;
-
-            margin: 30px auto;
-
-            padding: 10px 20px;
-
-            background: #1e3a8a;
-
-            color: white;
-
-            text-decoration: none;
-
-            border-radius: 5px;
-        }
-
-        .back:hover {
-            background: #162d6b;
-        }
-
-        @media (max-width: 700px) {
-
-            .timeline {
-                flex-direction: column;
-                gap: 20px;
-            }
-
-            .timeline::before {
+        @media (max-width: 800px) {
+            .header-icon {
                 display: none;
             }
 
-            .step {
-                width: 100%;
+            .details-grid {
+                grid-template-columns: 1fr;
             }
-
         }
 
+        @media (max-width: 650px) {
+            .nav-container {
+                padding: 15px 0;
+                flex-wrap: wrap;
+            }
+
+            .nav-links {
+                width: 100%;
+                justify-content: space-between;
+                gap: 12px;
+            }
+
+            .nav-links a {
+                font-size: 12px;
+            }
+
+            .page-header {
+                padding: 35px 0;
+            }
+
+            .section-heading {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .request-top {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 23px;
+            }
+
+            .request-body {
+                padding: 23px;
+            }
+
+            .tracking {
+                padding: 23px 17px;
+            }
+
+            .timeline {
+                grid-template-columns: 1fr;
+                gap: 23px;
+                margin-left: 6px;
+            }
+
+            .timeline::before {
+                top: 15px;
+                bottom: 15px;
+                left: 19px;
+                right: auto;
+                width: 3px;
+                height: auto;
+            }
+
+            .timeline-step {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                text-align: left;
+            }
+
+            .step-circle {
+                margin: 0;
+                flex-shrink: 0;
+            }
+
+            .timeline-step p {
+                font-size: 13px;
+            }
+        }
     </style>
-
 </head>
-
 
 <body>
 
+    <!-- NAVBAR -->
 
-    <nav>
+    <nav class="navbar">
+        <div class="container nav-container">
 
-        <strong>🔧 SmartFix</strong>
+            <a href="/" class="logo">
+                <div class="logo-icon">🔧</div>
+                <div>Smart<span>Fix</span></div>
+            </a>
 
-        <span>My Requests</span>
+            <div class="nav-links">
+                <a href="/dashboard">Dashboard</a>
+                <a href="/repair-request">New Repair</a>
+                <a href="/dashboard" class="nav-btn">
+                    ← Back
+                </a>
+            </div>
 
+        </div>
     </nav>
 
+    <!-- PAGE HEADER -->
 
-    <div class="container">
+    <header class="page-header">
 
+        <div class="container header-content">
 
-        <h1>
-            📋 My Repair Requests
-        </h1>
+            <div>
+                <span class="eyebrow">
+                    CUSTOMER SERVICE PORTAL
+                </span>
 
-
-        {% if requests %}
-
-
-            {% for request in requests %}
-
-
-                <div class="request">
-
-
-                    <div class="request-id">
-
-                        Request ID:
-                        #{{ request["id"] }}
-
-                    </div>
-
-
-                    <h2>
-                        {{ request["service_type"] }}
-                    </h2>
-
-
-                    <p>
-
-                        <strong>Mobile:</strong>
-
-                        {{ request["mobile"] }}
-
-                    </p>
-
-
-                    <p>
-
-                        <strong>Problem:</strong>
-
-                        {{ request["description"] }}
-
-                    </p>
-
-
-                    <p>
-
-                        <strong>Address:</strong>
-
-                        {{ request["address"] }}
-
-                    </p>
-
-
-                    <p>
-
-                        <strong>Current Status:</strong>
-
-
-                        {% if request["status"] == "Pending" %}
-
-                            <span class="status pending">
-                                Pending
-                            </span>
-
-
-                        {% elif request["status"] == "Assigned" %}
-
-                            <span class="status assigned">
-                                Assigned
-                            </span>
-
-
-                        {% elif request["status"] == "In Progress" %}
-
-                            <span class="status progress">
-                                In Progress
-                            </span>
-
-
-                        {% elif request["status"] == "Completed" %}
-
-                            <span class="status completed">
-                                Completed
-                            </span>
-
-
-                        {% endif %}
-
-                    </p>
-
-
-                    <!-- =========================
-                         TECHNICIAN
-                    ========================== -->
-
-                    {% if request["technician_name"] %}
-
-                        <div class="technician">
-
-                            🔧 <strong>Technician Assigned</strong>
-
-                            <p>
-
-                                <strong>Name:</strong>
-
-                                {{ request["technician_name"] }}
-
-                            </p>
-
-                        </div>
-
-
-                    {% else %}
-
-                        <div class="technician">
-
-                            ⏳ <strong>Technician:</strong>
-
-                            <p>
-                                Technician has not been assigned yet.
-                            </p>
-
-                        </div>
-
-                    {% endif %}
-
-
-                    <!-- =========================
-                         TRACKING
-                    ========================== -->
-
-                    <div class="tracking">
-
-                        <h3>
-                            📍 Repair Progress
-                        </h3>
-
-
-                        <div class="timeline">
-
-
-                            <!-- STEP 1 -->
-
-                            <div class="step completed">
-
-                                <div class="circle">
-                                    ✓
-                                </div>
-
-                                <p>
-                                    Request<br>
-                                    Submitted
-                                </p>
-
-                            </div>
-
-
-                            <!-- STEP 2 -->
-
-                            <div class="step
-                                {% if request['status'] in ['Assigned', 'In Progress', 'Completed'] %}
-                                    completed
-                                {% endif %}
-                            ">
-
-                                <div class="circle">
-
-                                    {% if request["status"] in
-                                    ["Assigned", "In Progress", "Completed"] %}
-                                        ✓
-                                    {% else %}
-                                        2
-                                    {% endif %}
-
-                                </div>
-
-                                <p>
-                                    Technician<br>
-                                    Assigned
-                                </p>
-
-                            </div>
-
-
-                            <!-- STEP 3 -->
-
-                            <div class="step
-                                {% if request['status'] == 'In Progress' %}
-                                    active
-                                {% elif request['status'] == 'Completed' %}
-                                    completed
-                                {% endif %}
-                            ">
-
-                                <div class="circle">
-
-                                    {% if request["status"] == "Completed" %}
-                                        ✓
-                                    {% elif request["status"] == "In Progress" %}
-                                        3
-                                    {% else %}
-                                        3
-                                    {% endif %}
-
-                                </div>
-
-                                <p>
-                                    Repair<br>
-                                    In Progress
-                                </p>
-
-                            </div>
-
-
-                            <!-- STEP 4 -->
-
-                            <div class="step
-                                {% if request['status'] == 'Completed' %}
-                                    completed
-                                {% endif %}
-                            ">
-
-                                <div class="circle">
-
-                                    {% if request["status"] == "Completed" %}
-                                        ✓
-                                    {% else %}
-                                        4
-                                    {% endif %}
-
-                                </div>
-
-                                <p>
-                                    Repair<br>
-                                    Completed
-                                </p>
-
-                            </div>
-
-
-                        </div>
-
-                    </div>
-
-
-                </div>
-
-
-            {% endfor %}
-
-
-        {% else %}
-
-
-            <div class="request">
-
-                <h2>
-                    No Repair Requests
-                </h2>
+                <h1>📋 My Repair Requests</h1>
 
                 <p>
-                    You have not submitted any repair request yet.
+                    View your submitted repair requests,
+                    technician assignments and repair progress
+                    in one organized place.
                 </p>
+            </div>
+
+            <div class="header-icon" aria-hidden="true">
+                🛠️
+            </div>
+
+        </div>
+
+    </header>
+
+    <!-- MAIN CONTENT -->
+
+    <main>
+        <div class="container">
+
+            <div class="section-heading">
+
+                <div>
+                    <h2>Your Repair Requests</h2>
+                    <p>
+                        Track the latest status of your submitted requests.
+                    </p>
+                </div>
+
+                <a href="/repair-request" class="btn btn-primary">
+                    + New Repair Request
+                </a>
 
             </div>
 
+            {% if requests %}
 
-        {% endif %}
+                {% for request in requests %}
 
+                    <!-- REQUEST CARD -->
 
-    </div>
+                    <article class="request-card">
 
+                        <div class="request-top">
 
-    <a href="/dashboard" class="back">
+                            <div>
+                                <span class="request-id">
+                                    REQUEST #{{ request["id"] }}
+                                </span>
 
-        ← Back to Dashboard
+                                <h3>
+                                    {{ request["service_type"] }}
+                                </h3>
+                            </div>
 
-    </a>
+                            <!-- CURRENT STATUS -->
 
+                            {% if request["status"] == "Pending" %}
+
+                                <span class="status pending">
+                                    ● Pending
+                                </span>
+
+                            {% elif request["status"] == "Assigned" %}
+
+                                <span class="status assigned">
+                                    ● Assigned
+                                </span>
+
+                            {% elif request["status"] == "In Progress" %}
+
+                                <span class="status progress">
+                                    ● In Progress
+                                </span>
+
+                            {% elif request["status"] == "Completed" %}
+
+                                <span class="status completed">
+                                    ✓ Completed
+                                </span>
+
+                            {% else %}
+
+                                <span class="status unknown">
+                                    {{ request["status"] }}
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+                        <!-- REQUEST DETAILS -->
+
+                        <div class="request-body">
+
+                            <div class="details-grid">
+
+                                <div class="detail-box">
+
+                                    <span class="detail-label">
+                                        📱 MOBILE NUMBER
+                                    </span>
+
+                                    <div class="detail-value">
+                                        {{ request["mobile"] }}
+                                    </div>
+
+                                </div>
+
+                                <div class="detail-box">
+
+                                    <span class="detail-label">
+                                        🛠️ SERVICE TYPE
+                                    </span>
+
+                                    <div class="detail-value">
+                                        {{ request["service_type"] }}
+                                    </div>
+
+                                </div>
+
+                                <div class="detail-box">
+
+                                    <span class="detail-label">
+                                        📝 PROBLEM DESCRIPTION
+                                    </span>
+
+                                    <div class="detail-value">{{ request["description"] }}</div>
+
+                                </div>
+
+                                <div class="detail-box">
+
+                                    <span class="detail-label">
+                                        📍 SERVICE ADDRESS
+                                    </span>
+
+                                    <div class="detail-value">{{ request["address"] }}</div>
+
+                                </div>
+
+                            </div>
+
+                            <!-- TECHNICIAN DETAILS -->
+
+                            {% if request["technician_name"] %}
+
+                                <div class="technician-box">
+
+                                    <h4>
+                                        👨‍🔧 Technician Assigned
+                                    </h4>
+
+                                    <p>
+                                        <strong>Name:</strong>
+                                        {{ request["technician_name"] }}
+                                    </p>
+
+                                </div>
+
+                            {% else %}
+
+                                <div class="technician-box technician-waiting">
+
+                                    <h4>
+                                        ⏳ Technician Assignment Pending
+                                    </h4>
+
+                                    <p>
+                                        A technician has not been assigned
+                                        to this repair request yet.
+                                    </p>
+
+                                </div>
+
+                            {% endif %}
+
+                            <!-- REPAIR TRACKING -->
+
+                            <section class="tracking">
+
+                                <h4>📊 Repair Progress</h4>
+
+                                <p class="tracking-subtitle">
+                                    Follow your repair request through
+                                    each stage of the process.
+                                </p>
+
+                                <div class="timeline">
+
+                                    <!-- STEP 1 -->
+
+                                    <div class="timeline-step done">
+
+                                        <div class="step-circle">
+                                            ✓
+                                        </div>
+
+                                        <p>
+                                            Request<br>
+                                            Submitted
+                                        </p>
+
+                                    </div>
+
+                                    <!-- STEP 2 -->
+
+                                    <div class="timeline-step
+                                        {% if request['status'] in ['Assigned', 'In Progress', 'Completed'] %}
+                                            done
+                                        {% endif %}
+                                    ">
+
+                                        <div class="step-circle">
+
+                                            {% if request["status"] in ["Assigned", "In Progress", "Completed"] %}
+                                                ✓
+                                            {% else %}
+                                                2
+                                            {% endif %}
+
+                                        </div>
+
+                                        <p>
+                                            Technician<br>
+                                            Assigned
+                                        </p>
+
+                                    </div>
+
+                                    <!-- STEP 3 -->
+
+                                    <div class="timeline-step
+                                        {% if request['status'] == 'In Progress' %}
+                                            active
+                                        {% elif request['status'] == 'Completed' %}
+                                            done
+                                        {% endif %}
+                                    ">
+
+                                        <div class="step-circle">
+
+                                            {% if request["status"] == "Completed" %}
+                                                ✓
+                                            {% else %}
+                                                3
+                                            {% endif %}
+
+                                        </div>
+
+                                        <p>
+                                            Repair<br>
+                                            In Progress
+                                        </p>
+
+                                    </div>
+
+                                    <!-- STEP 4 -->
+
+                                    <div class="timeline-step
+                                        {% if request['status'] == 'Completed' %}
+                                            done
+                                        {% endif %}
+                                    ">
+
+                                        <div class="step-circle">
+
+                                            {% if request["status"] == "Completed" %}
+                                                ✓
+                                            {% else %}
+                                                4
+                                            {% endif %}
+
+                                        </div>
+
+                                        <p>
+                                            Repair<br>
+                                            Completed
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+                            </section>
+
+                        </div>
+
+                    </article>
+
+                {% endfor %}
+
+            {% else %}
+
+                <!-- NO REQUESTS -->
+
+                <div class="empty-state">
+
+                    <div class="empty-icon">
+                        📭
+                    </div>
+
+                    <h3>No Repair Requests Yet</h3>
+
+                    <p>
+                        You haven't submitted any repair requests.
+                        <br>
+                        Create your first request to get started.
+                    </p>
+
+                    <a href="/repair-request" class="btn btn-primary">
+                        + Submit Your First Request
+                    </a>
+
+                </div>
+
+            {% endif %}
+
+            <!-- BOTTOM BUTTONS -->
+
+            <div class="bottom-actions">
+
+                <a href="/dashboard" class="btn btn-outline">
+                    ← Back to Dashboard
+                </a>
+
+                <a href="/repair-request" class="btn btn-primary">
+                    + New Repair Request
+                </a>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+
+    <footer>
+        © 2026 SmartFix Management System · Repair Tracking Portal
+    </footer>
 
 </body>
-
 </html>
-
