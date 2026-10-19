@@ -1,17 +1,29 @@
 from flask import Flask, render_template, request, redirect, session, url_for
 import sqlite3
 import os
-import smtplib
 import hashlib
+import json
+import urllib.request
+import urllib.error
+
 from email.message import EmailMessage
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 from werkzeug.security import generate_password_hash, check_password_hash
 
+
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "local-development-only-change-me")
+
+app.secret_key = os.environ.get(
+    "SECRET_KEY",
+    "local-development-only-change-me"
+)
 
 DATABASE = os.environ.get("DATABASE_PATH", "smartfix.db")
 
+
+# ==================================================
+# DATABASE CONNECTION
+# ==================================================
 
 def get_db_connection():
     conn = sqlite3.connect(DATABASE)
@@ -19,11 +31,20 @@ def get_db_connection():
     return conn
 
 
+# ==================================================
+# PASSWORD SECURITY
+# ==================================================
+
 def password_matches(stored, provided):
     if stored.startswith(("scrypt:", "pbkdf2:")):
         return check_password_hash(stored, provided)
+
     return stored == provided
 
+
+# ==================================================
+# PASSWORD RESET TOKEN
+# ==================================================
 
 def reset_serializer():
     return URLSafeTimedSerializer(
@@ -32,31 +53,81 @@ def reset_serializer():
     )
 
 
+# ==================================================
+# BREVO EMAIL API
+# ==================================================
+
 def send_reset_email(recipient, link):
-    sender = os.environ.get("SMTP_EMAIL")
-    password = os.environ.get("SMTP_PASSWORD")
 
-    if not sender or not password:
-        raise RuntimeError("SMTP settings missing")
+    api_key = os.environ.get("BREVO_API_KEY")
 
-    msg = EmailMessage()
-    msg["Subject"] = "SmartFix Password Reset"
-    msg["From"] = sender
-    msg["To"] = recipient
-    msg.set_content(
-        "Reset your SmartFix password using this link "
-        "(valid for 15 minutes):\n"
-        + link
-        + "\n\nIf you did not request this, ignore this email."
+    sender = (
+        os.environ.get("BREVO_SENDER_EMAIL")
+        or os.environ.get("SMTP_EMAIL")
     )
 
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=20) as smtp:
-        smtp.login(sender, password)
-        smtp.send_message(msg)
+    if not api_key or not sender:
+        raise RuntimeError("Brevo email settings missing")
 
+    url = "https://api.brevo.com/v3/smtp/email"
+
+    payload = {
+        "sender": {
+            "name": "SmartFix Support",
+            "email": sender
+        },
+        "to": [
+            {
+                "email": recipient
+            }
+        ],
+        "subject": "SmartFix Password Reset",
+        "textContent": (
+            "Hello,\n\n"
+            "You requested a password reset for your SmartFix account.\n\n"
+            "Click the link below:\n\n"
+            + link +
+            "\n\nThis link expires in 15 minutes.\n\n"
+            "If you did not request this, ignore this email.\n\n"
+            "SmartFix Support"
+        )
+    }
+
+    data = json.dumps(payload).encode("utf-8")
+
+    req = urllib.request.Request(
+        url,
+        data=data,
+        headers={
+            "accept": "application/json",
+            "api-key": api_key,
+            "content-type": "application/json"
+        },
+        method="POST"
+    )
+
+    try:
+        with urllib.request.urlopen(req, timeout=20) as response:
+            response.read()
+
+    except urllib.error.HTTPError as e:
+        error_body = e.read().decode("utf-8", errors="replace")
+        app.logger.error(
+            "Brevo API error: HTTP %s - %s",
+            e.code,
+            error_body[:500]
+        )
+        raise RuntimeError("Brevo API request failed") from e
+
+
+# ==================================================
+# CREATE CUSTOMER TABLE
+# ==================================================
 
 def create_database():
+
     conn = get_db_connection()
+
     conn.execute("""
         CREATE TABLE IF NOT EXISTS customers (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -67,12 +138,19 @@ def create_database():
             address TEXT NOT NULL
         )
     """)
+
     conn.commit()
     conn.close()
 
 
+# ==================================================
+# CREATE REPAIR TABLE
+# ==================================================
+
 def create_repair_table():
+
     conn = get_db_connection()
+
     conn.execute("""
         CREATE TABLE IF NOT EXISTS repair_requests (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -91,6 +169,7 @@ def create_repair_table():
     ).fetchall()
 
     if "technician_id" not in [c["name"] for c in columns]:
+
         conn.execute(
             "ALTER TABLE repair_requests ADD COLUMN technician_id INTEGER"
         )
@@ -99,7 +178,12 @@ def create_repair_table():
     conn.close()
 
 
+# ==================================================
+# CREATE ADMIN TABLE
+# ==================================================
+
 def create_admin_table():
+
     conn = get_db_connection()
 
     conn.execute("""
@@ -116,6 +200,7 @@ def create_admin_table():
     ).fetchone()
 
     if admin is None:
+
         conn.execute(
             "INSERT INTO admins (username, password) VALUES (?, ?)",
             ("admin", "admin123")
@@ -125,7 +210,12 @@ def create_admin_table():
     conn.close()
 
 
+# ==================================================
+# CREATE TECHNICIAN TABLE
+# ==================================================
+
 def create_technician_table():
+
     conn = get_db_connection()
 
     conn.execute("""
@@ -142,6 +232,10 @@ def create_technician_table():
     conn.commit()
     conn.close()
 
+
+# ==================================================
+# HOME
+# ==================================================
 
 @app.route("/")
 def home():
@@ -163,11 +257,17 @@ def contact():
     return render_template("contact.html")
 
 
+# ==================================================
+# CUSTOMER REGISTRATION
+# ==================================================
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
+
     if request.method == "POST":
+
         name = request.form["name"]
-        email = request.form["email"]
+        email = request.form["email"].strip().lower()
         mobile = request.form["mobile"]
         password = request.form["password"]
         address = request.form["address"]
@@ -175,6 +275,7 @@ def register():
         conn = get_db_connection()
 
         try:
+
             conn.execute("""
                 INSERT INTO customers
                 (name, email, mobile, password, address)
@@ -190,35 +291,54 @@ def register():
             conn.commit()
 
         except sqlite3.IntegrityError:
+
             conn.close()
+
             return "Email already registered."
 
         conn.close()
+
         return redirect("/login")
 
     return render_template("register.html")
 
 
+# ==================================================
+# CUSTOMER LOGIN
+# ==================================================
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
+
     if request.method == "POST":
-        email = request.form["email"]
+
+        email = request.form["email"].strip().lower()
         password = request.form["password"]
 
         conn = get_db_connection()
 
         customer = conn.execute(
-            "SELECT * FROM customers WHERE email = ?",
+            "SELECT * FROM customers WHERE lower(email) = ?",
             (email,)
         ).fetchone()
 
-        if customer and password_matches(customer["password"], password):
+        if customer and password_matches(
+            customer["password"],
+            password
+        ):
 
-            if not customer["password"].startswith(("scrypt:", "pbkdf2:")):
+            if not customer["password"].startswith(
+                ("scrypt:", "pbkdf2:")
+            ):
+
                 conn.execute(
                     "UPDATE customers SET password = ? WHERE id = ?",
-                    (generate_password_hash(password), customer["id"])
+                    (
+                        generate_password_hash(password),
+                        customer["id"]
+                    )
                 )
+
                 conn.commit()
 
             conn.close()
@@ -229,15 +349,24 @@ def login():
             return redirect("/dashboard")
 
         conn.close()
+
         return "Invalid email or password."
 
     return render_template("login.html")
 
 
+# ==================================================
+# FORGOT PASSWORD
+# ==================================================
+
 @app.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
+
     if request.method == "POST":
-        email = request.form.get("email", "").strip().lower()
+
+        email = request.form.get(
+            "email", ""
+        ).strip().lower()
 
         conn = get_db_connection()
 
@@ -250,6 +379,7 @@ def forgot_password():
         conn.close()
 
         if customer:
+
             fingerprint = hashlib.sha256(
                 customer["password"].encode()
             ).hexdigest()
@@ -266,12 +396,18 @@ def forgot_password():
             )
 
             try:
-                send_reset_email(customer["email"], link)
 
-            except (smtplib.SMTPException, OSError, RuntimeError):
+                send_reset_email(
+                    customer["email"],
+                    link
+                )
+
+            except (OSError, RuntimeError):
+
                 app.logger.exception(
                     "Could not send password reset email"
                 )
+
                 return (
                     "Email service is temporarily unavailable. "
                     "Please try again later.",
@@ -286,12 +422,25 @@ def forgot_password():
     return render_template("forgot_password.html")
 
 
-@app.route("/reset-password/<token>", methods=["GET", "POST"])
+# ==================================================
+# RESET PASSWORD
+# ==================================================
+
+@app.route(
+    "/reset-password/<token>",
+    methods=["GET", "POST"]
+)
 def reset_password(token):
+
     try:
-        data = reset_serializer().loads(token, max_age=900)
+
+        data = reset_serializer().loads(
+            token,
+            max_age=900
+        )
 
     except (BadSignature, SignatureExpired):
+
         return (
             "This reset link is invalid or expired. "
             "Request a new one.",
@@ -311,18 +460,23 @@ def reset_password(token):
             customer["password"].encode()
         ).hexdigest() != data.get("fp")
     ):
+
         conn.close()
+
         return (
             "This reset link is invalid or has already been used.",
             400
         )
 
     if request.method == "POST":
+
         password = request.form.get("password", "")
         confirm = request.form.get("confirm_password", "")
 
         if len(password) < 8 or password != confirm:
+
             conn.close()
+
             return (
                 "Passwords must match and contain "
                 "at least 8 characters.",
@@ -343,11 +497,17 @@ def reset_password(token):
         return redirect(url_for("login"))
 
     conn.close()
+
     return render_template("reset_password.html")
 
 
+# ==================================================
+# CUSTOMER DASHBOARD
+# ==================================================
+
 @app.route("/dashboard")
 def dashboard():
+
     if "customer_id" not in session:
         return redirect("/login")
 
@@ -357,12 +517,21 @@ def dashboard():
     )
 
 
-@app.route("/repair-request", methods=["GET", "POST"])
+# ==================================================
+# REPAIR REQUEST
+# ==================================================
+
+@app.route(
+    "/repair-request",
+    methods=["GET", "POST"]
+)
 def repair_request():
+
     if "customer_id" not in session:
         return redirect("/login")
 
     if request.method == "POST":
+
         mobile = request.form["mobile"]
         service_type = request.form["service_type"]
         description = request.form["description"]
@@ -372,7 +541,8 @@ def repair_request():
 
         conn.execute("""
             INSERT INTO repair_requests
-            (customer_name, mobile, service_type, description, address, status)
+            (customer_name, mobile, service_type,
+             description, address, status)
             VALUES (?, ?, ?, ?, ?, ?)
         """, (
             session["customer_name"],
@@ -391,8 +561,13 @@ def repair_request():
     return render_template("repair_request.html")
 
 
+# ==================================================
+# MY REQUESTS
+# ==================================================
+
 @app.route("/my-requests")
 def my_requests():
+
     if "customer_id" not in session:
         return redirect("/login")
 
@@ -406,7 +581,9 @@ def my_requests():
         ON repair_requests.technician_id = technicians.id
         WHERE repair_requests.customer_name = ?
         ORDER BY repair_requests.id DESC
-    """, (session["customer_name"],)).fetchall()
+    """, (
+        session["customer_name"],
+    )).fetchall()
 
     conn.close()
 
@@ -416,16 +593,31 @@ def my_requests():
     )
 
 
+# ==================================================
+# CUSTOMER LOGOUT
+# ==================================================
+
 @app.route("/logout")
 def logout():
+
     session.pop("customer_id", None)
     session.pop("customer_name", None)
+
     return redirect("/")
 
 
-@app.route("/admin-login", methods=["GET", "POST"])
+# ==================================================
+# ADMIN LOGIN
+# ==================================================
+
+@app.route(
+    "/admin-login",
+    methods=["GET", "POST"]
+)
 def admin_login():
+
     if request.method == "POST":
+
         username = request.form["username"]
         password = request.form["password"]
 
@@ -433,14 +625,19 @@ def admin_login():
 
         admin = conn.execute("""
             SELECT * FROM admins
-            WHERE username = ? AND password = ?
-        """, (username, password)).fetchone()
+            WHERE username = ?
+        """, (username,)).fetchone()
 
         conn.close()
 
-        if admin:
+        if admin and password_matches(
+            admin["password"],
+            password
+        ):
+
             session["admin_id"] = admin["id"]
             session["admin_username"] = admin["username"]
+
             return redirect("/admin")
 
         return "Invalid admin username or password."
@@ -448,8 +645,13 @@ def admin_login():
     return render_template("admin_login.html")
 
 
+# ==================================================
+# ADMIN DASHBOARD
+# ==================================================
+
 @app.route("/admin")
 def admin_dashboard():
+
     if "admin_id" not in session:
         return redirect("/admin-login")
 
@@ -492,8 +694,13 @@ def admin_dashboard():
     )
 
 
+# ==================================================
+# ADMIN REPAIR REQUESTS
+# ==================================================
+
 @app.route("/admin/repairs")
 def admin_repairs():
+
     if "admin_id" not in session:
         return redirect("/admin-login")
 
@@ -521,8 +728,16 @@ def admin_repairs():
     )
 
 
-@app.route("/admin/update-status/<int:request_id>", methods=["POST"])
+# ==================================================
+# UPDATE REPAIR STATUS
+# ==================================================
+
+@app.route(
+    "/admin/update-status/<int:request_id>",
+    methods=["POST"]
+)
 def update_status(request_id):
+
     if "admin_id" not in session:
         return redirect("/admin-login")
 
@@ -534,7 +749,10 @@ def update_status(request_id):
         UPDATE repair_requests
         SET status = ?
         WHERE id = ?
-    """, (status, request_id))
+    """, (
+        status,
+        request_id
+    ))
 
     conn.commit()
     conn.close()
@@ -542,8 +760,16 @@ def update_status(request_id):
     return redirect("/admin/repairs")
 
 
-@app.route("/admin/assign-technician/<int:request_id>", methods=["POST"])
+# ==================================================
+# ASSIGN TECHNICIAN
+# ==================================================
+
+@app.route(
+    "/admin/assign-technician/<int:request_id>",
+    methods=["POST"]
+)
 def assign_technician(request_id):
+
     if "admin_id" not in session:
         return redirect("/admin-login")
 
@@ -555,7 +781,10 @@ def assign_technician(request_id):
         UPDATE repair_requests
         SET technician_id = ?, status = 'Assigned'
         WHERE id = ?
-    """, (technician_id, request_id))
+    """, (
+        technician_id,
+        request_id
+    ))
 
     conn.commit()
     conn.close()
@@ -563,8 +792,13 @@ def assign_technician(request_id):
     return redirect("/admin/repairs")
 
 
+# ==================================================
+# ADMIN CUSTOMERS
+# ==================================================
+
 @app.route("/admin/customers")
 def admin_customers():
+
     if "admin_id" not in session:
         return redirect("/admin-login")
 
@@ -582,8 +816,13 @@ def admin_customers():
     )
 
 
+# ==================================================
+# ADMIN TECHNICIANS
+# ==================================================
+
 @app.route("/admin/technicians")
 def admin_technicians():
+
     if "admin_id" not in session:
         return redirect("/admin-login")
 
@@ -601,16 +840,31 @@ def admin_technicians():
     )
 
 
+# ==================================================
+# ADMIN LOGOUT
+# ==================================================
+
 @app.route("/admin-logout")
 def admin_logout():
+
     session.pop("admin_id", None)
     session.pop("admin_username", None)
+
     return redirect("/admin-login")
 
 
-@app.route("/technician-register", methods=["GET", "POST"])
+# ==================================================
+# TECHNICIAN REGISTRATION
+# ==================================================
+
+@app.route(
+    "/technician-register",
+    methods=["GET", "POST"]
+)
 def technician_register():
+
     if request.method == "POST":
+
         name = request.form["name"]
         email = request.form["email"]
         mobile = request.form["mobile"]
@@ -620,33 +874,47 @@ def technician_register():
         conn = get_db_connection()
 
         try:
+
             conn.execute("""
                 INSERT INTO technicians
-                (name, email, mobile, specialization, password)
+                (name, email, mobile,
+                 specialization, password)
                 VALUES (?, ?, ?, ?, ?)
             """, (
                 name,
                 email,
                 mobile,
                 specialization,
-                password
+                generate_password_hash(password)
             ))
 
             conn.commit()
 
         except sqlite3.IntegrityError:
+
             conn.close()
+
             return "Email already registered."
 
         conn.close()
+
         return redirect("/technician-login")
 
     return render_template("technician_register.html")
 
 
-@app.route("/technician-login", methods=["GET", "POST"])
+# ==================================================
+# TECHNICIAN LOGIN
+# ==================================================
+
+@app.route(
+    "/technician-login",
+    methods=["GET", "POST"]
+)
 def technician_login():
+
     if request.method == "POST":
+
         email = request.form["email"]
         password = request.form["password"]
 
@@ -654,14 +922,19 @@ def technician_login():
 
         technician = conn.execute("""
             SELECT * FROM technicians
-            WHERE email = ? AND password = ?
-        """, (email, password)).fetchone()
+            WHERE email = ?
+        """, (email,)).fetchone()
 
         conn.close()
 
-        if technician:
+        if technician and password_matches(
+            technician["password"],
+            password
+        ):
+
             session["technician_id"] = technician["id"]
             session["technician_name"] = technician["name"]
+
             return redirect("/technician-dashboard")
 
         return "Invalid email or password."
@@ -669,8 +942,13 @@ def technician_login():
     return render_template("technician_login.html")
 
 
+# ==================================================
+# TECHNICIAN DASHBOARD
+# ==================================================
+
 @app.route("/technician-dashboard")
 def technician_dashboard():
+
     if "technician_id" not in session:
         return redirect("/technician-login")
 
@@ -681,7 +959,9 @@ def technician_dashboard():
         FROM repair_requests
         WHERE technician_id = ?
         ORDER BY id DESC
-    """, (session["technician_id"],)).fetchall()
+    """, (
+        session["technician_id"],
+    )).fetchall()
 
     conn.close()
 
@@ -692,8 +972,16 @@ def technician_dashboard():
     )
 
 
-@app.route("/technician/update-status/<int:request_id>", methods=["POST"])
+# ==================================================
+# TECHNICIAN UPDATE STATUS
+# ==================================================
+
+@app.route(
+    "/technician/update-status/<int:request_id>",
+    methods=["POST"]
+)
 def technician_update_status(request_id):
+
     if "technician_id" not in session:
         return redirect("/technician-login")
 
@@ -717,12 +1005,22 @@ def technician_update_status(request_id):
     return redirect("/technician-dashboard")
 
 
+# ==================================================
+# TECHNICIAN LOGOUT
+# ==================================================
+
 @app.route("/technician-logout")
 def technician_logout():
+
     session.pop("technician_id", None)
     session.pop("technician_name", None)
+
     return redirect("/technician-login")
 
+
+# ==================================================
+# INITIALIZE DATABASE
+# ==================================================
 
 create_database()
 create_repair_table()
@@ -730,7 +1028,12 @@ create_admin_table()
 create_technician_table()
 
 
+# ==================================================
+# RUN APPLICATION
+# ==================================================
+
 if __name__ == "__main__":
+
     app.run(
         host="0.0.0.0",
         port=int(os.environ.get("PORT", 5000))
