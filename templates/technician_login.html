@@ -127,6 +127,25 @@
             font-size: 12px;
         }
 
+        /* Forgot Password Link */
+
+        .forgot-password {
+            text-align: right;
+            margin-top: 12px;
+            margin-bottom: 5px;
+        }
+
+        .forgot-password a {
+            color: #116149;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
         .login-btn {
             width: 100%;
             padding: 15px;
@@ -245,6 +264,14 @@
                         Show
                     </button>
 
+                </div>
+
+                <!-- Technician Forgot Password -->
+
+                <div class="forgot-password">
+                    <a href="{{ url_for('technician_forgot_password') }}">
+                        Forgot Password?
+                    </a>
                 </div>
 
             </div>
