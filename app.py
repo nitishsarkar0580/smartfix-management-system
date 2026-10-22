@@ -943,6 +943,76 @@ def technician_login():
 
 
 # ==================================================
+# TECHNICIAN FORGOT PASSWORD (BREVO)
+# ==================================================
+
+@app.route("/technician-forgot-password", methods=["GET", "POST"])
+def technician_forgot_password():
+    if request.method == "POST":
+        email = request.form.get("email", "").strip().lower()
+        conn = get_db_connection()
+        technician = conn.execute(
+            "SELECT id, email, password FROM technicians WHERE lower(email) = ?",
+            (email,)
+        ).fetchone()
+        conn.close()
+
+        if technician:
+            fingerprint = hashlib.sha256(technician["password"].encode()).hexdigest()
+            serializer = URLSafeTimedSerializer(
+                app.secret_key, salt="smartfix-technician-reset-v1"
+            )
+            token = serializer.dumps({"id": technician["id"], "fp": fingerprint})
+            link = url_for("technician_reset_password", token=token, _external=True)
+            try:
+                send_reset_email(technician["email"], link)
+            except (OSError, RuntimeError):
+                app.logger.exception("Could not send technician password reset email")
+                return "Email service is temporarily unavailable. Please try again later.", 503
+
+        return "If this technician email is registered, a reset link has been sent. Check your inbox."
+
+    return render_template("technician_forgot_password.html")
+
+
+@app.route("/technician-reset-password/<token>", methods=["GET", "POST"])
+def technician_reset_password(token):
+    serializer = URLSafeTimedSerializer(
+        app.secret_key, salt="smartfix-technician-reset-v1"
+    )
+    try:
+        data = serializer.loads(token, max_age=900)
+    except (BadSignature, SignatureExpired):
+        return "Reset link is invalid or expired. Please request a new one.", 400
+
+    conn = get_db_connection()
+    technician = conn.execute(
+        "SELECT id, password FROM technicians WHERE id = ?", (data.get("id"),)
+    ).fetchone()
+    if (not technician or
+            hashlib.sha256(technician["password"].encode()).hexdigest() != data.get("fp")):
+        conn.close()
+        return "Reset link is invalid or has already been used.", 400
+
+    if request.method == "POST":
+        password = request.form.get("password", "")
+        confirm = request.form.get("confirm_password", "")
+        if len(password) < 8 or password != confirm:
+            conn.close()
+            return "Passwords must match and contain at least 8 characters.", 400
+        conn.execute(
+            "UPDATE technicians SET password = ? WHERE id = ?",
+            (generate_password_hash(password), technician["id"])
+        )
+        conn.commit()
+        conn.close()
+        return redirect(url_for("technician_login"))
+
+    conn.close()
+    return render_template("technician_reset_password.html")
+
+
+# ==================================================
 # TECHNICIAN DASHBOARD
 # ==================================================
 
