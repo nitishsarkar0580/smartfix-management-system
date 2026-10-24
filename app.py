@@ -646,6 +646,83 @@ def admin_login():
 
 
 # ==================================================
+# ADMIN FORGOT PASSWORD (BREVO)
+# ==================================================
+
+@app.route("/admin-forgot-password", methods=["GET", "POST"])
+def admin_forgot_password():
+    if request.method == "POST":
+        email = request.form.get("email", "").strip().lower()
+        recovery_email = os.environ.get("ADMIN_RECOVERY_EMAIL", "").strip().lower()
+
+        if recovery_email and email == recovery_email:
+            conn = get_db_connection()
+            admin = conn.execute(
+                "SELECT id, username, password FROM admins WHERE username = ?",
+                ("admin",)
+            ).fetchone()
+            conn.close()
+
+            if admin:
+                fingerprint = hashlib.sha256(admin["password"].encode()).hexdigest()
+                serializer = URLSafeTimedSerializer(
+                    app.secret_key, salt="smartfix-admin-reset-v1"
+                )
+                token = serializer.dumps({"id": admin["id"], "fp": fingerprint})
+                link = url_for("admin_reset_password", token=token, _external=True)
+                try:
+                    send_reset_email(recovery_email, link)
+                except (OSError, RuntimeError):
+                    app.logger.exception("Could not send admin password reset email")
+                    return "Email service is temporarily unavailable. Please try again later.", 503
+
+        return "If this email is authorized, a password reset link has been sent. Check your inbox."
+
+    return render_template("admin_forgot_password.html")
+
+
+@app.route("/admin-reset-password/<token>", methods=["GET", "POST"])
+def admin_reset_password(token):
+    serializer = URLSafeTimedSerializer(
+        app.secret_key, salt="smartfix-admin-reset-v1"
+    )
+    try:
+        data = serializer.loads(token, max_age=900)
+    except (BadSignature, SignatureExpired):
+        return "Reset link is invalid or expired. Please request a new one.", 400
+
+    conn = get_db_connection()
+    admin = conn.execute(
+        "SELECT id, password FROM admins WHERE id = ? AND username = ?",
+        (data.get("id"), "admin")
+    ).fetchone()
+
+    if (not admin or
+            hashlib.sha256(admin["password"].encode()).hexdigest() != data.get("fp")):
+        conn.close()
+        return "Reset link is invalid or has already been used.", 400
+
+    if request.method == "POST":
+        password = request.form.get("password", "")
+        confirm = request.form.get("confirm_password", "")
+        if len(password) < 8 or password != confirm:
+            conn.close()
+            return "Passwords must match and contain at least 8 characters.", 400
+        conn.execute(
+            "UPDATE admins SET password = ? WHERE id = ?",
+            (generate_password_hash(password), admin["id"])
+        )
+        conn.commit()
+        conn.close()
+        session.pop("admin_id", None)
+        session.pop("admin_username", None)
+        return redirect(url_for("admin_login"))
+
+    conn.close()
+    return render_template("admin_reset_password.html")
+
+
+# ==================================================
 # ADMIN DASHBOARD
 # ==================================================
 
