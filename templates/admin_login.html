@@ -127,6 +127,22 @@
             font-size: 12px;
         }
 
+        /* Forgot Password Link */
+        .forgot-password {
+            display: block;
+            text-align: right;
+            margin-top: 12px;
+            color: #116149;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .forgot-password:hover {
+            color: #16a36c;
+            text-decoration: underline;
+        }
+
         .login-btn {
             width: 100%;
             padding: 15px;
@@ -237,6 +253,13 @@
                     </button>
 
                 </div>
+
+                <a
+                    href="{{ url_for('admin_forgot_password') }}"
+                    class="forgot-password"
+                >
+                    Forgot Password?
+                </a>
             </div>
 
             <button type="submit" class="login-btn">
